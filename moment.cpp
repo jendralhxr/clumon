@@ -8,12 +8,12 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
-#define THRESHOLD_GRAY 60
+#define THRESHOLD_GRAY 50
 //#define THRESHOLD_VAL_UPPER 120
 //#define THRESHOLD_VAL_LOWER 100
 #define MAX_OBJECTS 256
 #define IMAGE_COUNT 1000
-#define MASS_MINIMUM 32
+#define MASS_MINIMUM 16
 
 using namespace std;
 using namespace cv;
@@ -95,14 +95,15 @@ secondpass:
 			
 		}
 	}
-	//else moment_map.data[offset] = 0; // may be optional, zeroing the map
+	else moment_map.data[offset] = 0; // may be optional, zeroing the map
 	offset++;
 	if (offset < image_height*image_width) goto secondpass;
 
 	// log, number of objects and their positions
 	//logfile << object_counts << ';';
 	for (int i = object_counts; i > 0; i--) {
-		if (mass[i]) logfile << 'n' << i << ',' << double(moment_x[i] /= mass[i]) << ',' << double(moment_y[i] /= mass[i]) << ',' << mass[i] << ';';
+		if (mass[i] > MASS_MINIMUM) \
+			logfile << double(moment_x[i] /= mass[i]) << ',' << double(moment_y[i] /= mass[i]) << ',' << mass[i] << ';';
 	}
 	logfile << endl;
 
@@ -121,7 +122,6 @@ int main()
 		if (image_height || image_width) {
 			cvtColor(image_input, image, CV_BGR2GRAY);
 			//cvtColor(image_input, image, CV_BGR2HSV);
-			sprintf_s(filename, "D:\\zoomlenses\\g%4.4d.png", n);
 			//			imwrite(filename, image);
 			cout << filename << ' ' << calculate_moment_gray() << endl;
 		}

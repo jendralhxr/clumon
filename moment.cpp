@@ -12,7 +12,7 @@
 //#define THRESHOLD_VAL_UPPER 120
 //#define THRESHOLD_VAL_LOWER 100
 #define MAX_OBJECTS 256
-#define IMAGE_COUNT 100
+#define IMAGE_COUNT 1000
 #define MASS_MINIMUM 32
 
 using namespace std;
@@ -99,15 +99,6 @@ secondpass:
 	offset++;
 	if (offset < image_height*image_width) goto secondpass;
 
-	// highlighter
-	offset = image_width*image_height - 1;
-highlight:
-	if (moment_map.data[offset]) moment_map.data[offset] += 200;
-	offset--;
-	if (offset) goto highlight;
-	sprintf_s(filename, "D:\\zoomlenses\\b%4.4d.png", n);
-	imwrite(filename, moment_map);
-	
 	// log, number of objects and their positions
 	//logfile << object_counts << ';';
 	for (int i = object_counts; i > 0; i--) {

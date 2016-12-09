@@ -5,11 +5,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 240
+#define THRESHOLD_GRAY 200
 #define MAX_OBJECTS 256
 #define MASS_MINIMUM 8
 #define IMAGE_COUNT 1000
-#define OBJECT_DISTANCE_MAX 32
+#define OBJECT_DISTANCE_MAX 40
 
 using namespace std;
 using namespace cv;
@@ -48,52 +48,6 @@ restofimage:
 	else moment_map.data[offset] = 0; // may be optional, zeroing the map
 	offset--;
 	if (offset>image_width) goto restofimage;
-
-/*
-//second pass
-	offset = 1;
-secondpass:
-	if (moment_map.data[offset]) {
-		// horizontal neighbor
-		temp = moment_map.data[offset];
-		if (moment_map.data[offset - 1]>temp) {
-			moment_map.data[offset] = moment_map.data[offset - 1];
-			moment_x[moment_map.data[offset - 1]] += moment_x[temp];
-			moment_x[temp] = 0;
-			moment_y[moment_map.data[offset - 1]] += moment_y[temp];
-			moment_y[temp] = 0;
-			mass[moment_map.data[offset - 1]] += mass[temp];
-			mass[temp] = 0;
-		}
-
-		// horizontal neighbor
-		if (moment_map.data[offset + 1] > temp) {
-			moment_map.data[offset] = moment_map.data[offset + 1];
-			moment_x[moment_map.data[offset + 1]] += moment_x[temp];
-			moment_x[temp] = 0;
-			moment_y[moment_map.data[offset + 1]] += moment_y[temp];
-			moment_y[temp] = 0;
-			mass[moment_map.data[offset + 1]] += mass[temp];
-			mass[temp] = 0;
-		}
-		
-		// vertical neighbor, maybe unsafe
-		if (offset > image_width) {
-			if (moment_map.data[offset - image_width]>temp) {
-				moment_map.data[offset] = moment_map.data[offset - image_width];
-				moment_x[moment_map.data[offset - image_width]] += moment_x[temp];
-				moment_x[temp] = 0;
-				moment_y[moment_map.data[offset - image_width]] += moment_y[temp];
-				moment_y[temp] = 0;
-				mass[moment_map.data[offset - image_width]] += mass[temp];
-				mass[temp] = 0;
-			}
-		}
-	}
-//	else moment_map.data[offset] = 0; // may be optional, zeroing the map
-	offset++;
-	if (offset < image_height*image_width) goto secondpass;
-*/
 
 // silly merge and sort goes here
 // now we have centroid for meta-clusters
@@ -138,10 +92,25 @@ secondpass:
 			}
 		}
 
+int start_x=0, start_y=0, stop_x=0, stop_y=0;
+
 	// log, number of objects and their positions
 	for (int i = object_counts; i > 0; i--) {
-		if ((mass[i] > MASS_MINIMUM) && !isnanf(moment_x[i]) && !isnanf(moment_y[i])) \
+		if ((mass[i] > 4) && !isnanf(moment_x[i]) && !isnanf(moment_y[i])){
 			logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] << ';';
+	if (start_x==0) start_x= int(moment_x[i]);
+	else start_x= int(stop_x);
+	if (start_y==0) start_y= int(moment_y[i]);
+	else start_y= int(stop_y);
+	stop_x= int(moment_x[i]);
+	stop_y= int(moment_y[i]);
+	
+	
+	line( moment_map, 
+        cvPoint(start_x, start_y),
+        cvPoint(stop_x, stop_y),
+        Scalar(255,255,255), 2, 8 , 0);	
+	}
 	}
 	logfile << endl;
 
@@ -150,8 +119,8 @@ highlight:
 	if (moment_map.data[offset]) moment_map.data[offset] = 100 + 2 * moment_map.data[offset];
 	offset--;
 	if (offset) goto highlight;
-	//sprintf(filename, "D:\\zoomlenses\\2016_11_12-canon\\b%4.4d.png", n);
-	//imwrite(filename, moment_map);
+	sprintf(filename, "/me/ledball/b%4.4d.png", n);
+	imwrite(filename, moment_map);
 	return(object_counts);
 }
 

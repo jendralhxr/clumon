@@ -5,9 +5,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 128
+#define THRESHOLD_GRAY 240
 #define MAX_OBJECTS 256
-#define MASS_MINIMUM 16
+#define MASS_MINIMUM 8
 #define IMAGE_COUNT 1000
 #define OBJECT_DISTANCE_MAX 32
 
@@ -24,6 +24,7 @@ int image_height, image_width;
 unsigned int calculate_moment_gray() {
 	Mat moment_map = Mat(image_height, image_width, CV_8UC1);
 	double moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
+	double moment_x_temp, moment_y_temp, mass_temp;
 	int object_counts = 0, offset = 0;
 	unsigned char temp;
 
@@ -101,7 +102,6 @@ secondpass:
 		moment_y[i] /= mass[i];
 		}
 
-	
 	for (int i=object_counts; i>0; i--){ // quadrature scan
 		for (int j=object_counts; j>0; j--){
 	//for (int i=object_counts; i>0; i--){ // for some reason, this wont work
@@ -117,6 +117,23 @@ secondpass:
 				moment_x[j]= 0;
 				moment_y[j]= 0;
 				mass[j]= 0;
+				}
+			}
+		}
+
+// little sorting
+	for (int i= object_counts; i>0; i--){
+		for (int j=i-1; j>0; j--){
+			if (moment_x[i] > moment_x[j]){
+				moment_x_temp= moment_x[i];
+				moment_y_temp= moment_y[i];
+				mass_temp= mass[i];
+				moment_x[i]= moment_x[j];
+				moment_y[i]= moment_y[j];
+				mass[i]= mass[j];
+				moment_x[j]= moment_x_temp;
+				moment_y[j]= moment_y_temp;
+				mass[j]= mass_temp;
 				}
 			}
 		}

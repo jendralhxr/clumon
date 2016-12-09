@@ -46,7 +46,7 @@ restofimage:
 	}
 	else moment_map.data[offset] = 0; // may be optional, zeroing the map
 	offset--;
-	if (offset) goto restofimage;
+	if (offset>image_width) goto restofimage;
 
 /*
 //second pass
@@ -123,7 +123,7 @@ secondpass:
 
 	// log, number of objects and their positions
 	for (int i = object_counts; i > 0; i--) {
-		if ((mass[i] > MASS_MINIMUM) && (mass[i] != NAN)) \
+		if ((mass[i] > MASS_MINIMUM) && !isnanf(moment_x[i]) && !isnanf(moment_y[i])) \
 			logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] << ';';
 	}
 	logfile << endl;

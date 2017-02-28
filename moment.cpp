@@ -295,7 +295,7 @@ int cvblob(){
 		}
 	
 	// the log	
-	for (int i= n; i>0; i--){
+	for (int i=n-1; i>=0; i--){
 		//logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] <<';';
 		logfile << moment_x[i] << ',' << moment_y[i] << ';';
 		}

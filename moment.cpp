@@ -278,8 +278,8 @@ int cvblob(){
 		} //  std::cout << ' ' << *it;	
 	
 	// little sorting
-	for (int i= n; i>0; i--){
-		for (int j=i-1; j>0; j--){
+	for (int i=n-1; i>=0; i--){
+		for (int j=i-1; j>=0; j--){
 			if (moment_x[i] > moment_x[j]){
 				moment_x_temp= moment_x[i];
 				moment_y_temp= moment_y[i];

@@ -255,19 +255,22 @@ int cvblob(){
 	float moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
 	float moment_x_temp, moment_y_temp, mass_temp;
 	// Set up the detector with default parameters.
-	SimpleBlobDetector detector;
-	//SimpleBlobDetector::Params params;
-	//params.filterByCircularity = false;
-	//params.filterByConvexity = false;
-	//params.filterByInertia = false;
-	//SimpleBlobDetector detector(params);
+	//SimpleBlobDetector detector;
+	SimpleBlobDetector::Params params;
+	params.filterByCircularity = false;
+	params.filterByConvexity = false;
+	params.filterByInertia = true;
+	params.filterByColor = false;
+	//params.maxThreshold = 220;
+	params.minThreshold = 19;
+	SimpleBlobDetector detector(params);
 
 	// Detect blobs.
 	std::vector<KeyPoint> keypoints;
-	Mat invert;
-	bitwise_not(image, invert);
-	detector.detect(invert, keypoints);
-	//detector.detect(image, keypoints);
+	//Mat invert;
+	//bitwise_not(image, invert);
+	//detector.detect(invert, keypoints);
+	detector.detect(image, keypoints);
 
 	int n=0; 
 	for (std::vector<KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end(); ++it){
@@ -300,6 +303,7 @@ int cvblob(){
 		//logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] <<';';
 		logfile << moment_x[i] << ',' << moment_y[i] << ';';
 		}
+	if (n!=10) logfile << "foo";	
 	logfile << endl;
 	return(n);
 	}
@@ -308,7 +312,6 @@ int cvblob(){
 // parse image sequence	
 int main(int argc, char **argv){
 	logfile.open("/me/log.txt");
-	printf("num: %d ",atoi(argv[1]));
 	
 	for (framenum=0; framenum<atoi(argv[2]); framenum++){
 		sprintf(filename, "%s/xi%4.4d.tif", argv[1], framenum);

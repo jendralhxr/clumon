@@ -67,14 +67,12 @@ restofimage:
 		if ((mass[i]>4) && (moment_y[i]>0) && (moment_x[i]>0)){
 			moment_x[i] /= mass[i];
 			moment_y[i] /= mass[i];
-			printf("n%d x%lf y%lf m%lf\n",i, moment_x[i], moment_y[i], mass[i]);
+		//	printf("n%d x%lf y%lf m%lf\n",i, moment_x[i], moment_y[i], mass[i]);
 			}
 		else {
 			moment_x[i]= 0;
 			moment_y[i]= 0;
 			mass[i]= 0;
-			//printf("kosong n%d x%lf y%lf m%lf\n",i, moment_x[i], moment_y[i], mass[i]);
-			
 			}
 		}
 		

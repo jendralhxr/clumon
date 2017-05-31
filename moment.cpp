@@ -5,11 +5,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 100
-#define MAX_OBJECTS 1024
-#define MASS_MINIMUM 20
+#define THRESHOLD_GRAY 20
+#define MAX_OBJECTS 2048
+#define MASS_MINIMUM 200
 #define IMAGE_COUNT 50
-#define OBJECT_DISTANCE_MAX 40
+#define OBJECT_DISTANCE_MAX 50
 
 using namespace std;
 using namespace cv;
@@ -49,22 +49,33 @@ restofimage:
 			object_counts++;
 			moment_map.data[offset] = object_counts;
 		}
-		moment_x[moment_map.data[offset]] += (offset % image_width);
-		moment_y[moment_map.data[offset]] += (offset / image_width);
-		mass[moment_map.data[offset]]+=1;
+		if (moment_map.data[offset] != 0){
+			moment_x[moment_map.data[offset]] += (offset % image_width);
+			moment_y[moment_map.data[offset]] += (offset / image_width);
+			mass[moment_map.data[offset]]+=1;
+		}
 	}
 	else moment_map.data[offset] = 0; // may be optional, zeroing the map
 	offset--;
 	if (offset>image_width) goto restofimage;
-	sprintf(filename,"val%04d.png",framenum);
+	//sprintf(filename,"val%04d.png",framenum);
 	//imwrite(filename, moment_map);
 		
 // silly merge and sort goes here
 // now we have centroid for meta-clusters to mess with
 	for (int i=object_counts; i>0; i--){
-		moment_x[i] /= mass[i];
-		moment_y[i] /= mass[i];
-		//printf("x%lf y%lf m%lf \n",moment_x[i], moment_y[i], mass[i]);
+		if ((mass[i]>4) && (moment_y[i]>0) && (moment_x[i]>0)){
+			moment_x[i] /= mass[i];
+			moment_y[i] /= mass[i];
+			printf("n%d x%lf y%lf m%lf\n",i, moment_x[i], moment_y[i], mass[i]);
+			}
+		else {
+			moment_x[i]= 0;
+			moment_y[i]= 0;
+			mass[i]= 0;
+			//printf("kosong n%d x%lf y%lf m%lf\n",i, moment_x[i], moment_y[i], mass[i]);
+			
+			}
 		}
 		
 	// quadrature scan
@@ -78,14 +89,14 @@ restofimage:
 				/(mass[i]+mass[j]);
 				moment_y[i] = (moment_y[i]*mass[i]+moment_y[j]*mass[j])\
 				/(mass[i]+mass[j]);
-				moment_x[j]= 0;
-				moment_y[j]= 0;
-				mass[i]+= mass[j];
-				mass[j]= 0;
+				mass[i]= mass[i] + mass[j];
+				moment_x[j]= 0.0;
+				moment_y[j]= 0.0;
+				mass[j]= 0.0;
 				}
 			}
 		}
-
+				
 // little sorting
 	for (int i= object_counts; i>0; i--){
 		for (int j=i-1; j>0; j--){
@@ -103,18 +114,16 @@ restofimage:
 			}
 		}
 
-int start_x=0, start_y=0, stop_x=0, stop_y=0;
-
 	// log, number of objects and their positions
-	for (int i = object_counts; i > 0; i--) {
-		if ((mass[i] > MASS_MINIMUM) && !isnanf(moment_x[i]) && !isnanf(moment_y[i]) \
-		&& (moment_y[i]<400)&& (moment_x[i]>900)){
-//			logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] <<';';
+//	for (int i = object_counts; i > 0; i--) {
+	for (int i = object_counts-1; i > 0; i--) {
+		if ((mass[i] > MASS_MINIMUM) && (moment_x[i]>1) && (moment_y[i]>1)){
+//	logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] <<';';
 			logfile << moment_x[i] << ',' << moment_y[i] << ';';
 //			logfile << moment_x[i] << ';';
 	
 	/* drawing line
-	
+	int start_x=0, start_y=0, stop_x=0, stop_y=0;
 	if (start_x==0) start_x= int(moment_x[i]);
 	else start_x= int(stop_x);
 	if (start_y==0) start_y= int(moment_y[i]);
@@ -137,7 +146,8 @@ highlight:
 	if (offset) goto highlight;
 	//sprintf(filename, "m%4.4d.png", n);
 	//imwrite(filename, moment_map);
-	return(object_counts);*/
+	*/
+	return(object_counts);
 }
 
 /* Sobel-wannabe operation
@@ -257,19 +267,17 @@ int cvblob(){
 	// Set up the detector with default parameters.
 	//SimpleBlobDetector detector;
 	SimpleBlobDetector::Params params;
-	params.filterByCircularity = false;
-	params.filterByConvexity = false;
-	params.filterByInertia = true;
 	params.filterByColor = false;
+	params.filterByCircularity = false;
+	params.filterByConvexity = true;
+	params.filterByInertia = true;
 	//params.maxThreshold = 220;
-	params.minThreshold = 19;
+	//params.minThreshold = 100;
 	SimpleBlobDetector detector(params);
 
 	// Detect blobs.
 	std::vector<KeyPoint> keypoints;
-	//Mat invert;
-	//bitwise_not(image, invert);
-	//detector.detect(invert, keypoints);
+	//Mat invert; bitwise_not(image, invert); detector.detect(invert, keypoints);
 	detector.detect(image, keypoints);
 
 	int n=0; 
@@ -301,9 +309,9 @@ int cvblob(){
 	// the log	
 	for (int i=n-1; i>=0; i--){
 		//logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] <<';';
-		logfile << moment_x[i] << ',' << moment_y[i] << ';';
+		logfile << moment_x[i] 	<< ',' << moment_y[i] << ';';
 		}
-	if (n!=10) logfile << "foo";	
+	//logfile << n;	
 	logfile << endl;
 	return(n);
 	}
@@ -324,8 +332,8 @@ int main(int argc, char **argv){
 			cvtColor(image_input, image, CV_BGR2GRAY);
 			//cvtColor(image_input, image, CV_BGR2HSV);
 			//		imwrite(filename, image);
-			printf("%d\n",cvblob());
-			//cout << filename << ' ' << calculate_moment_gray() << endl;
+			//printf("%d\n",cvblob());
+			cout << ' ' << calculate_moment_gray() << endl;
 			//cout << filename << ' ' << apply_threshold() << endl;
 			//cout << filename << ' ' << apply_gradient() << endl;
 			//cout << filename << apply_canny() << endl;

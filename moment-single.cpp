@@ -86,16 +86,21 @@ restofimage:
 // parse image sequence	
 int main(int argc, char **argv){
 	logfile.open("/me/log.txt");
-	sprintf(filename, "%s", argv[1]);
-	image_input = imread(argv[1], 1);
+	sprintf(filename, "%s", argv[2]);
+	image_input = imread(argv[2], 1);
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	int mrgins[MARKER_COUNT]={240, 430, 626, 800, 1000, 1170, 1312, 1458, 1615, 1785, 2022};
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
-		calculate_niner(mrgins);
-		//calculate_historam();
+		if (!strcmp(argv[1],"h")) calculate_historam();
+		else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
+		else {
+			cout << "put either 'h' or 'c' for argv[1]" << endl; 
+			return(0);
+			}
+		//
 	}
 	else {
 		cout << "fail to open " << filename << endl;

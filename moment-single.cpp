@@ -10,7 +10,7 @@
 #define MAX_OBJECTS 1024 
 #define MASS_MINIMUM 200
 #define OBJECT_DISTANCE_MAX 120
-#define MARKER_COUNT 9
+#define MARKER_COUNT 11
 using namespace std;
 using namespace cv;
 
@@ -35,61 +35,22 @@ unsigned int calculate_historam(){
 		}
 	}
 
-unsigned int calculate_niner(int m1, int m2, int m3, int m4, int m5,\
-	int m6,int m7, int m8, int m9){
+unsigned int calculate_niner(int *margin){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
 	double moment_x_temp, moment_y_temp, mass_temp;
-	
 	
 	offset = image_width*image_height - 1;
 niner:
 	if (image.data[offset] > THRESHOLD_GRAY) {
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
-		if (moment_x_temp<m1){
-			moment_x[0]+= moment_x_temp;
-			moment_y[0]+= moment_y_temp;
-			mass[0]++;
-			}
-		else if (moment_x_temp<m2){
-			moment_x[1]+= moment_x_temp;
-			moment_y[1]+= moment_y_temp;
-			mass[1]++;
-			}
-		else if (moment_x_temp<m3){
-			moment_x[2]+= moment_x_temp;
-			moment_y[2]+= moment_y_temp;
-			mass[2]++;
-			}
-		else if (moment_x_temp<m4){
-			moment_x[3]+= moment_x_temp;
-			moment_y[3]+= moment_y_temp;
-			mass[3]++;
-			}
-		else if (moment_x_temp<m5){
-			moment_x[4]+= moment_x_temp;
-			moment_y[4]+= moment_y_temp;
-			mass[4]++;
-			}
-		else if (moment_x_temp<m6){
-			moment_x[5]+= moment_x_temp;
-			moment_y[5]+= moment_y_temp;
-			mass[5]++;
-			}
-		else if (moment_x_temp<m7){
-			moment_x[6]+= moment_x_temp;
-			moment_y[6]+= moment_y_temp;
-			mass[6]++;
-			}
-		else if (moment_x_temp<m8){
-			moment_x[7]+= moment_x_temp;
-			moment_y[7]+= moment_y_temp;
-			mass[7]++;
-			}
-		else if (moment_x_temp<m9){
-			moment_x[8]+= moment_x_temp;
-			moment_y[8]+= moment_y_temp;
-			mass[8]++;
+		for (int i=0; i<MARKER_COUNT; i++){
+			if (moment_x_temp<margin[i]){
+				moment_x[i]+= moment_x_temp;
+				moment_y[i]+= moment_y_temp;
+				mass[i]++;
+				break;
+				}
 			}
 		}
 	offset--;
@@ -130,11 +91,11 @@ int main(int argc, char **argv){
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
+	int mrgins[MARKER_COUNT]={240, 430, 626, 800, 1000, 1170, 1312, 1458, 1615, 1785, 2022};
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
-		//calculate_moment_gray();
+		calculate_niner(mrgins);
 		//calculate_historam();
-		calculate_niner(270, 510, 740, 1000, 1220, 1410, 1600, 1800, 2000);
 	}
 	else {
 		cout << "fail to open " << filename << endl;

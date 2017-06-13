@@ -6,8 +6,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 7
-#define MAX_OBJECTS 1024 
+#define THRESHOLD_GRAY 15
+#define MAX_OBJECTS 1024
 #define MASS_MINIMUM 200
 #define OBJECT_DISTANCE_MAX 120
 #define MARKER_COUNT 11
@@ -85,13 +85,13 @@ restofimage:
 
 // parse image sequence	
 int main(int argc, char **argv){
-	logfile.open("/me/log.txt");
+	//logfile.open("/me/log.txt");
 	sprintf(filename, "%s", argv[2]);
 	image_input = imread(argv[2], 1);
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
-	int mrgins[MARKER_COUNT]={240, 430, 626, 800, 1000, 1170, 1312, 1458, 1615, 1785, 2022};
+	int mrgins[MARKER_COUNT]={220, 440, 650, 850, 1060, 1246, 1400, 1566, 1726, 1889, 2048};
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
 		if (!strcmp(argv[1],"h")) calculate_historam();

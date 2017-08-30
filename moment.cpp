@@ -6,10 +6,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 7
+#define THRESHOLD_GRAY 20
 #define MAX_OBJECTS 1024
-#define MASS_MINIMUM 200
-#define OBJECT_DISTANCE_MAX 120
 #define MARKER_ROWS 9
 #define MARKER_COUNT 18
 using namespace std;
@@ -18,7 +16,7 @@ using namespace cv;
 ofstream logfile;
 char filename[256];
 
-Mat image, image_input;
+Mat image, image_input, temp;
 int image_height, image_width;
 int framenum;
 unsigned int offset;
@@ -35,6 +33,29 @@ unsigned int calculate_historam(){
 		printf("hist %d: %.0f\n",i,hist_value[i]);
 		}
 	}
+
+unsigned int calculate_width(int thresholdval){
+	double moment_x_temp, moment_y_temp;
+	int x_min=image_width, x_max=0, y_min=image_height, y_max=0;
+	
+	offset = image_width*image_height - 1;
+	width:
+	if (image.data[offset] > thresholdval) {
+		moment_x_temp = (offset % image_width);
+		moment_y_temp = (offset / image_width);
+		if (moment_y_temp>y_max) y_max= moment_y_temp;
+		if (moment_y_temp<y_min) y_min= moment_y_temp;
+		if (moment_x_temp>x_max) x_max= moment_x_temp;
+		if (moment_x_temp<x_min) x_min= moment_x_temp;
+		}
+	offset--;
+	if (offset>image_width) goto width;
+	
+	printf("marker: %d %d %d %d %d %d\n",x_max, x_min, y_max, y_min ,x_max-x_min, y_max-y_min);
+		
+	
+	}
+
 
 unsigned int calculate_niner(int *margin){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
@@ -68,6 +89,9 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
 	double moment_x_temp, moment_y_temp, mass_temp;
 	
+	image_height = image.rows;
+	image_width = image.cols;
+
 	offset = image_width*image_height - 1;
 rower:
 	if (image.data[offset] > THRESHOLD_GRAY) {
@@ -98,7 +122,7 @@ rower:
 	if (offset>image_width) goto rower;
 	
 	for(int i=0; i<MARKER_COUNT; i++){
-		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << endl;
+		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
 		}
 	cout << endl;
 	return(0);
@@ -121,7 +145,7 @@ restofimage:
 	offset--;
 	if (offset>image_width) goto restofimage;
 	
-	cout << setprecision(8) << moment_x_temp/mass_temp << ',' << moment_y_temp/mass_temp << endl;
+	cout << setprecision(8) << moment_x_temp/mass_temp << ',' << moment_y_temp/mass_temp << ';';
 	return(mass_temp);
 }
 
@@ -134,17 +158,21 @@ int main(int argc, char **argv){
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	int mrgins[MARKER_COUNT]={2048};
-	int separator= 1350;
-	int row1[9]={293, 450, 588, 750, 938, 1129, 1365, 1588, 1925};
-	int row2[9]={263, 444, 609, 793, 995, 1206, 1404, 1627, 1950};
+	int separator= 282;
+	int row1[9]={282, 464, 621, 804, 1002, 1208, 1417, 1647, 1936};
+	int row2[9]={373, 536, 669, 827, 1013, 1195, 1423, 1660, 1941};
 	
 	if (image_height && image_width) {
+		//cvtColor(image_input, temp, CV_BGR2GRAY);
+		//transpose(temp, image); // in case of rotated camera
 		cvtColor(image_input, image, CV_BGR2GRAY);
+		//imshow("disp",image); waitKey(0);
 		if (!strcmp(argv[1],"h")) calculate_historam();
 		else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
 		else if (!strcmp(argv[1],"d")) calculate_rower(separator, row1, row2);
+		else if (!strcmp(argv[1],"w")) calculate_width(atoi(argv[3]));
 		else {
-			cout << "put either 'h' or 'c' for argv[1]" << endl; 
+			cout << "wrong argument for argv[1]" << endl; 
 			return(0);
 			}
 		//

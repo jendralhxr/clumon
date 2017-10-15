@@ -5,14 +5,15 @@
 
 FILE *input;
 FILE *output;
+FILE *output2;
 int framecount;
-char filename[128];
+char filename[128], filename2[128];
 
 int parse18pointsinput(){
 	float point[36];
 	int i,t;
 	for (t=0; t<framecount; t++){
-		fscanf(input,"%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;\n",\
+		fscanf(input,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",\
 		&point[0], &point[1], &point[2], &point[3],\
 		&point[4], &point[5], &point[6], &point[7],\
 		&point[8], &point[9], &point[10], &point[11],\
@@ -45,6 +46,21 @@ int parse18pointsinput(){
 		fprintf(output,"%f %f %f\n\n", 400.0, MULTIPLIER_LATERAL*point[34]+32, MULTIPLIER_VERTICAL*point[35]);
 		fprintf(output,"\n");
 		fclose(output);
+		
+		sprintf(filename2, "deck%04dn", t);
+		output2= fopen(filename2, "w");
+		fprintf(output2,"# t=%d\n",t);
+		fprintf(output2,"%f %f %f\n", 0.0,   MULTIPLIER_LATERAL*point[0], 	MULTIPLIER_VERTICAL*point[1]);
+		fprintf(output2,"%f %f %f\n", 50.0,  MULTIPLIER_LATERAL*point[2], 	MULTIPLIER_VERTICAL*point[3]);
+		fprintf(output2,"%f %f %f\n", 100.0, MULTIPLIER_LATERAL*point[4], 	MULTIPLIER_VERTICAL*point[5]);
+		fprintf(output2,"%f %f %f\n", 150.0, MULTIPLIER_LATERAL*point[6], 	MULTIPLIER_VERTICAL*point[7]);
+		fprintf(output2,"%f %f %f\n", 200.0, MULTIPLIER_LATERAL*point[8], 	MULTIPLIER_VERTICAL*point[9]);
+		fprintf(output2,"%f %f %f\n", 250.0, MULTIPLIER_LATERAL*point[10], 	MULTIPLIER_VERTICAL*point[11]);
+		fprintf(output2,"%f %f %f\n", 300.0, MULTIPLIER_LATERAL*point[12], 	MULTIPLIER_VERTICAL*point[13]);
+		fprintf(output2,"%f %f %f\n", 350.0, MULTIPLIER_LATERAL*point[14], 	MULTIPLIER_VERTICAL*point[15]);
+		fprintf(output2,"%f %f %f\n", 400.0, MULTIPLIER_LATERAL*point[16], 	MULTIPLIER_VERTICAL*point[17]);
+		fprintf(output2,"\n");
+		fclose(output2);
 		}
 }
 

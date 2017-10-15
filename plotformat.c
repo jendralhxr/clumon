@@ -1,5 +1,5 @@
 #define MULTIPLIER 80 // bear in mind abount the cm and mm :D
-#define MULTIPLIER_LATERAL 5
+#define MULTIPLIER_LATERAL 10
 #define MULTIPLIER_VERTICAL 10
 #include <stdio.h>
 
@@ -12,7 +12,7 @@ int parse18pointsinput(){
 	float point[36];
 	int i,t;
 	for (t=0; t<framecount; t++){
-		fscanf(input,"%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f\n",\
+		fscanf(input,"%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;%f,%f;\n",\
 		&point[0], &point[1], &point[2], &point[3],\
 		&point[4], &point[5], &point[6], &point[7],\
 		&point[8], &point[9], &point[10], &point[11],\

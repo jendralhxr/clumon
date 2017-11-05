@@ -7,7 +7,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 20
+#define THRESHOLD_GRAY 25
 #define MAX_OBJECTS 1024
 #define MARKER_ROWS 9
 #define MARKER_COUNT 18
@@ -23,16 +23,20 @@ int framenum;
 unsigned int offset;
 
 unsigned int calculate_historam(){
+	double max_intensity=0;
 	double hist_value[256]; // 8-bit depth
+	int i;
+	
 	offset = image_width*image_height - 1;
 	histo:
 	hist_value[image.data[offset]]+=1;
+	if (image.data[offset]>max_intensity) max_intensity= image.data[offset];
 	offset--;
 	if (offset>0) goto histo;
-	
-	for (int i=0; i<256; i++){
+	for (i=0; i<256; i++){
 		printf("hist %d: %.0f\n",i,hist_value[i]);
 		}
+	printf("max: %.0f\n", max_intensity);
 	}
 
 unsigned int calculate_width(int thresholdval, int sep){
@@ -58,7 +62,6 @@ unsigned int calculate_width(int thresholdval, int sep){
 	if (offset>image_width) goto width;
 	printf("marker: %lf %lf %d %d\n",moment_x/mass_temp, moment_y/mass_temp, x_max-x_min, y_max-y_min);
 	}
-
 
 unsigned int calculate_niner(int *margin){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
@@ -100,9 +103,9 @@ rower:
 	if (image.data[offset] > THRESHOLD_GRAY) {
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
-		if (moment_x_temp<separator){ // first row markers
+		if (moment_x_temp>separator){ // first row markers
 			for (int i=0; i<9; i++){
-				if (moment_y_temp<margin1[i]){
+				if (moment_y_temp>margin1[i]){
 					moment_x[i]+= moment_x_temp;
 					moment_y[i]+= moment_y_temp;
 					mass[i]++;
@@ -112,7 +115,7 @@ rower:
 			}
 		else { // second row markers
 			for (int i=9; i<18; i++){
-				if (moment_y_temp<margin2[i-9]){
+				if (moment_y_temp>margin2[i-9]){
 					moment_x[i]+= moment_x_temp;
 					moment_y[i]+= moment_y_temp;
 					mass[i]++;
@@ -204,7 +207,7 @@ int cvblob(){
 		cout << moment_x[i] 	<< ',' << moment_y[i] << ';';
 		}
 	//logfile << n;	
-	logfile << endl;
+	cout << endl;
 	return(n);
 }
 
@@ -217,14 +220,16 @@ int main(int argc, char **argv){
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	int mrgins[MARKER_COUNT]={2048};
-	int separator= 1570;
-	int row1[9]={151, 282, 423, 600, 775, 973, 1168, 1386, 1686};
-	int row2[9]={336, 518, 679, 841, 1029, 1253, 1479, 1736, 2021};
+	int separator= 370;
+	int row2[9]={1500, 1234, 1060, 872, 688, 500, 378, 228, 10};
+	int row1[9]={1616, 1372, 1137, 930, 744, 576, 420, 270, 50};
 	
 	if (image_height && image_width) {
+		// in case of rotated camera, 3 lines
 		cvtColor(image_input, temp, CV_BGR2GRAY);
-		transpose(temp, image); // in case of rotated camera
-		flip(image, image, 0);
+		transpose(temp, image); 
+		flip(image, image, 1);
+		// or it is already in grayscale
 		//cvtColor(image_input, image, CV_BGR2GRAY);
 		//imshow("disp",image); waitKey(0);
 		if (!strcmp(argv[1],"h")) calculate_historam();

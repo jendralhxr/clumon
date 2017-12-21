@@ -119,7 +119,7 @@ niner:
 	return(0);
 	} 
 
-unsigned int calculate_rower(int separator, int *margin1, int *margin2, int threshold){
+unsigned int calculate_rower(int separator, int *margin1, int *margin2){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
 	double moment_x_temp, moment_y_temp, mass_temp;
 	
@@ -128,7 +128,7 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 
 	offset = image_width*image_height - 1;
 rower:
-	if (image.data[offset] > threshold) {
+	if (image.data[offset] > THRESHOLD_GRAY) {
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
 		if (moment_x_temp>separator){ // first row markers
@@ -248,9 +248,9 @@ int main(int argc, char **argv){
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	int mrgins[MARKER_COUNT]={2048};
-	int separator= 378;
+	int separator= 386;
 	int row2[9]={1500, 1234, 1060, 872, 688, 500, 378, 228, 10}; // left side
-	int row1[9]={1539, 1278, 1077, 906, 729, 564, 405, 255, 20}; // right side
+	int row1[9]={1540, 1278, 1072, 898, 728, 564, 405, 255, 10}; // right side
 	
 	if (image_height && image_width) {
 		// in case of rotated camera, 3 lines
@@ -263,7 +263,7 @@ int main(int argc, char **argv){
 		if (!strcmp(argv[1],"h")) calculate_histogram(atoi(argv[3]));
 		//else if (!strcmp(argv[1],"g")) calculate_moment_gray(atoi(argv[3]));
 		//else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
-		else if (!strcmp(argv[1],"d")) calculate_rower(separator, row1, row2, atoi(argv[3]));
+		else if (!strcmp(argv[1],"d")) calculate_rower(separator, row1, row2);
 		else if (!strcmp(argv[1],"w")) calculate_width(atoi(argv[3]), atoi(argv[4]));
 		else if (!strcmp(argv[1],"v")) cvblob();
 		else {

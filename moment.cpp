@@ -22,6 +22,14 @@ int image_height, image_width;
 int framenum;
 unsigned int offset;
 
+unsigned int read_row(int row){
+	offset = image_width*row - 1;
+	readrow:
+	printf("%d;",image.data[offset]);
+	offset--;
+	if (offset%image_width) goto readrow;
+	}
+
 unsigned int calculate_histogram(int threshold){
 	double max_intensity=0;
 	double hist_value[256]; // 8-bit depth image
@@ -261,20 +269,21 @@ int main(int argc, char **argv){
 		//cvtColor(image_input, image, CV_BGR2GRAY);
 		// imshow("disp",image); waitKey(0);
 		if (!strcmp(argv[1],"h")) calculate_histogram(atoi(argv[3]));
-		//else if (!strcmp(argv[1],"g")) calculate_moment_gray(atoi(argv[3]));
-		//else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
+		else if (!strcmp(argv[1],"g")) calculate_moment_gray(atoi(argv[3]));
+		else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
 		else if (!strcmp(argv[1],"d")) calculate_rower(separator, row1, row2);
 		else if (!strcmp(argv[1],"w")) calculate_width(atoi(argv[3]), atoi(argv[4]));
+		else if (!strcmp(argv[1],"r")) read_row(atoi(argv[3]));
 		else if (!strcmp(argv[1],"v")) cvblob();
 		else {
 			cout << "wrong argument for argv[1]" << endl; 
-			return(0);
+			return(1);
 			}
 		//
 	}
 	else {
 		cout << "fail to open " << filename << endl;
-		return(1);
+		return(2);
 		}
 	return(0);
 }

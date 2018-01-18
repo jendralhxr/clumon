@@ -41,19 +41,19 @@ int main(int argc, char **argv){
 	image_width = image.cols;
 	printf("size: %d %d\n",image_width, image_height);
 	
+	int i, j;
 	block =  (double**) malloc(sizeof(double *) * image_height);
-	for (int j=0; j<image_height; j++){
+	for (j=0; j<image_height; j++){
 		block[j] = (double*) malloc(sizeof(double)* image_width);
 		}
 		
-	int i, j;
 	for (int num=atoi(argv[2]); num<atoi(argv[3]); num++){
 		sprintf(filename, "%s%05d.tif", argv[1], num);
 		printf("%s\n",filename);
 		image = imread(filename, 1);
 		for (j=0; j<image_height; j++){
 			for (i=0; i<image_width; i++){
-				block[j][i]= image.data[image_width*j + i] / imagecount; 
+				block[j][i]+= image.data[image_width*j + i] / imagecount; 
 				}
 			}
 		}

@@ -7,11 +7,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 15
-#define MAX_OBJECTS 1024
-#define MARKER_ROWS 9
-#define MARKER_COUNT 18
-#define MARKER_COUNT_REF 20
 using namespace std;
 using namespace cv;
 
@@ -53,14 +48,14 @@ int main(int argc, char **argv){
 		image = imread(filename, 1);
 		for (j=0; j<image_height; j++){
 			for (i=0; i<image_width; i++){
-				block[j][i]+= image.data[image_width*j + i] / imagecount; 
+				block[j][i]+= image.data[image_width*j + i]; 
 				}
 			}
 		}
 	
 	for (j=0; j<image_height; j++){
 		for (i=0; i<image_width; i++){
-			temp.data[image_width*j + i]= (char) block[j][i]; 
+			temp.data[image_width*j + i]= (char) (block[j][i] / imagecount); 
 			}
 		}
 	imwrite("average.tif", temp);	

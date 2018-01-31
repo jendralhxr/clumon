@@ -7,10 +7,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 50
+#define THRESHOLD_GRAY 10
 #define MAX_OBJECTS 1024
 #define MARKER_ROWS 9
 #define MARKER_COUNT 18
+#define MARKER_COUNT_REF 20
 using namespace std;
 using namespace cv;
 
@@ -38,7 +39,7 @@ unsigned int calculate_histogram(int threshold){
 	
 	offset = image_width*image_height - 1;
 	histo:
-	hist_value[image.data[offset]]+=1;
+	hist_value[image.data[offset]]++;
 	if (image.data[offset]>threshold){
 		cumulative_count++;
 		cumulative_value+=image.data[offset];
@@ -47,7 +48,7 @@ unsigned int calculate_histogram(int threshold){
 	offset--;
 	if (offset>0) goto histo;
 	for (i=0; i<256; i++){
-		printf("hist %d: %.0f\n",i,hist_value[i]);
+		//printf("hist %d: %.0f\n",i,hist_value[i]);
 		}
 	cumulative_value /= cumulative_count;	
 	printf("%s max: %.0f; avg: %.0f\n", filename, max_intensity, cumulative_value);
@@ -62,7 +63,11 @@ unsigned int calculate_width(int thresholdval, int sep){
 	if (image.data[offset] > thresholdval) {
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
-		if ((offset % image_width) < sep){
+		if (((offset % image_width) > 765) &&\
+			((offset % image_width) < 1090) &&\
+			((offset / image_width) > 414) &&\
+			((offset / image_width) < 600)\
+			){
 			if (moment_y_temp>y_max) y_max= moment_y_temp;
 			if (moment_y_temp<y_min) y_min= moment_y_temp;
 			if (moment_x_temp>x_max) x_max= moment_x_temp;
@@ -127,8 +132,13 @@ niner:
 	return(0);
 	} 
 
-unsigned int calculate_rower(int separator, int *margin1, int *margin2){
-	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
+unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre){
+	//double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
+	double *moment_x, *moment_y, *mass;
+	moment_x = (double *) malloc(sizeof(double)*MARKER_COUNT);
+	moment_y = (double *)malloc(sizeof(double)*MARKER_COUNT);
+	mass = (double *) malloc(sizeof(double)*MARKER_COUNT);
+	
 	double moment_x_temp, moment_y_temp, mass_temp;
 	
 	image_height = image.rows;
@@ -136,10 +146,68 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2){
 
 	offset = image_width*image_height - 1;
 rower:
-	if (image.data[offset] > THRESHOLD_GRAY) {
+	if (image.data[offset] > thre) {
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
 		if (moment_x_temp>separator){ // first row markers
+			for (int i=0; i<=8; i++){
+				if (moment_y_temp>margin1[i]){
+					moment_x[i]+= moment_x_temp;
+					moment_y[i]+= moment_y_temp;
+					mass[i]+=1.0;
+					break;
+					}
+				}
+			}
+		else { // second row markers
+			for (int i=9; i<=17; i++){
+				if (moment_y_temp>margin2[i-9]){
+					moment_x[i]+= moment_x_temp;
+					moment_y[i]+= moment_y_temp;
+					mass[i]+=1.0;
+					break;
+					}
+				}
+			}	
+		}
+	offset--;
+	if (offset>image_width) goto rower;
+	
+	for(int i=0; i<MARKER_COUNT; i++){
+		//cout << mass[i] << ';';
+		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
+		}
+	cout << endl;
+	return(0);
+	} 
+
+unsigned int calculate_ref(int upper, int lower, int mid, int *margin1, int *margin2){
+	double moment_x[MARKER_COUNT_REF], moment_y[MARKER_COUNT_REF], mass[MARKER_COUNT_REF];
+	double moment_x_temp, moment_y_temp, mass_temp;
+	
+	image_height = image.rows;
+	image_width = image.cols;
+
+	offset = image_width*image_height - 1;
+ref:
+	if (image.data[offset] > THRESHOLD_GRAY) {
+		moment_x_temp = (offset % image_width);
+		moment_y_temp = (offset / image_width);
+		
+		// right reference
+		if (moment_x_temp>upper){ 
+			moment_x[18]+= moment_x_temp;
+			moment_y[18]+= moment_y_temp;
+			mass[18]++;
+			}
+		// left reference
+		else if (moment_x_temp<lower){
+			moment_x[19]+= moment_x_temp;
+			moment_y[19]+= moment_y_temp;
+			mass[19]++;
+			} 
+		//	
+		else if (moment_x_temp>mid){ // first row markers
 			for (int i=0; i<9; i++){
 				if (moment_y_temp>margin1[i]){
 					moment_x[i]+= moment_x_temp;
@@ -161,14 +229,72 @@ rower:
 			}	
 		}
 	offset--;
-	if (offset>image_width) goto rower;
+	if (offset>image_width) goto ref;
 	
-	for(int i=0; i<MARKER_COUNT; i++){
+	for(int i=0; i<MARKER_COUNT_REF; i++){
 		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
 		}
 	cout << endl;
 	return(0);
 	} 
+
+unsigned int calculate_refw(int thre, int upper, int lower, int mid, int *margin1, int *margin2){
+	double moment_x[MARKER_COUNT_REF], moment_y[MARKER_COUNT_REF], mass[MARKER_COUNT_REF];
+	double moment_x_temp, moment_y_temp, mass_temp;
+	
+	image_height = image.rows;
+	image_width = image.cols;
+
+	offset = image_width*image_height - 1;
+rw:
+	if (image.data[offset] > thre) {
+		moment_x_temp = (offset % image_width);
+		moment_y_temp = (offset / image_width);
+		
+		// right reference
+		if (moment_x_temp>upper){ 
+			moment_x[18]+= moment_x_temp;
+			moment_y[18]+= moment_y_temp;
+			mass[18]++;
+			}
+		// left reference
+		else if (moment_x_temp<lower){
+			moment_x[19]+= moment_x_temp;
+			moment_y[19]+= moment_y_temp;
+			mass[19]++;
+			} 
+		//	
+		else if (moment_x_temp>mid){ // first row markers
+			for (int i=0; i<9; i++){
+				if (moment_y_temp>margin1[i]){
+					moment_x[i]+= moment_x_temp;
+					moment_y[i]+= moment_y_temp;
+					mass[i]++;
+					break;
+					}
+				}
+			}
+		else { // second row markers
+			for (int i=9; i<18; i++){
+				if (moment_y_temp>margin2[i-9]){
+					moment_x[i]+= moment_x_temp;
+					moment_y[i]+= moment_y_temp;
+					mass[i]++;
+					break;
+					}
+				}
+			}	
+		}
+	offset--;
+	if (offset>image_width) goto rw;
+	
+	for(int i=0; i<MARKER_COUNT_REF; i++){
+		printf("%.0f;", mass[i]);
+		}
+	cout << endl;
+	return(0);
+	} 
+
 
 unsigned int calculate_moment_gray(int sep) {
 	//Mat moment_map = Mat(image_height, image_width, CV_8UC1);
@@ -256,9 +382,15 @@ int main(int argc, char **argv){
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	int mrgins[MARKER_COUNT]={2048};
-	int separator= 386;
-	int row2[9]={1500, 1234, 1060, 872, 688, 500, 378, 228, 10}; // left side
-	int row1[9]={1540, 1278, 1072, 898, 728, 564, 405, 255, 10}; // right side
+	
+	int side1[9]={1614, 1366, 1104, 902, 712, 550, 392, 236, 75}; // right side
+	int side2[9]={1590, 1320, 1106, 878, 690, 538, 390, 240, 68}; // left side
+	int upper= 620;
+	int lower= 130;
+	
+	int separator= 360;
+	int row1[9]={1624, 1374, 1140, 912, 719, 574, 416, 277, 81}; // left side
+	int row2[9]={1624, 1416, 1189, 992, 795, 637, 480, 360, 180}; // right side
 	
 	if (image_height && image_width) {
 		// in case of rotated camera, 3 lines
@@ -271,7 +403,9 @@ int main(int argc, char **argv){
 		if (!strcmp(argv[1],"h")) calculate_histogram(atoi(argv[3]));
 		else if (!strcmp(argv[1],"g")) calculate_moment_gray(atoi(argv[3]));
 		else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
-		else if (!strcmp(argv[1],"d")) calculate_rower(separator, row1, row2);
+		else if (!strcmp(argv[1],"d")) calculate_rower(separator, row1, row2, atoi(argv[3]));
+		else if (!strcmp(argv[1],"f")) calculate_ref(upper, lower, separator, side1, side2);
+		else if (!strcmp(argv[1],"x")) calculate_refw(atoi(argv[3]), upper, lower, separator, side1, side2);
 		else if (!strcmp(argv[1],"w")) calculate_width(atoi(argv[3]), atoi(argv[4]));
 		else if (!strcmp(argv[1],"r")) read_row(atoi(argv[3]));
 		else if (!strcmp(argv[1],"v")) cvblob();

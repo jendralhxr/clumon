@@ -122,6 +122,6 @@ int parse16singleside(){
 int main(int argc, char **argv){
 	input= fopen(argv[1], "r");
 	framecount= atoi(argv[2]);
-	//parse18dualside();
-	parse16singleside();
+	parse18dualside();
+	//parse16singleside();
 	}

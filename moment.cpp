@@ -137,6 +137,8 @@ niner:
 
 unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre){
 	double *moment_x, *moment_y, *mass;
+	double *cumulative_value, *cumulative_count; 
+	unsigned char *max_value;
 	moment_x = (double *) malloc(sizeof(double)*MARKER_COUNT);
 	moment_y = (double *)malloc(sizeof(double)*MARKER_COUNT);
 	mass = (double *) malloc(sizeof(double)*MARKER_COUNT);
@@ -145,6 +147,9 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 	y_min = (double *) malloc(sizeof(double)*MARKER_COUNT);
 	x_max = (double *) malloc(sizeof(double)*MARKER_COUNT);
 	y_max = (double *) malloc(sizeof(double)*MARKER_COUNT);
+	cumulative_count = (double *) malloc(sizeof(double)*MARKER_COUNT);
+	cumulative_value = (double *) malloc(sizeof(double)*MARKER_COUNT);
+	max_value = (unsigned char *) malloc(sizeof(char)*MARKER_COUNT);
 	
 	double moment_x_temp, moment_y_temp, mass_temp;
 	
@@ -166,6 +171,9 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 					moment_x[i]+= moment_x_temp;
 					moment_y[i]+= moment_y_temp;
 					mass[i]+=1.0;
+					cumulative_count[i]++;
+					cumulative_value[i]+=image.data[offset];
+					if (image.data[offset] > max_value[i]) max_value[i]= image.data[offset];
 					if (moment_x_temp>x_max[i]) x_max[i]= moment_x_temp;
 					if (moment_x_temp<x_min[i]) x_min[i]= moment_x_temp;
 					if (moment_y_temp>y_max[i]) y_max[i]= moment_y_temp;
@@ -182,6 +190,9 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 					moment_x[i]+= moment_x_temp;
 					moment_y[i]+= moment_y_temp;
 					mass[i]+=1.0;
+					cumulative_count[i]++;
+					cumulative_value[i]+=image.data[offset];
+					if (image.data[offset] > max_value[i]) max_value[i] = image.data[offset];
 					if (moment_x_temp>x_max[i]) x_max[i]= moment_x_temp;
 					if (moment_x_temp<x_min[i]) x_min[i]= moment_x_temp;
 					if (moment_y_temp>y_max[i]) y_max[i]= moment_y_temp;
@@ -196,7 +207,9 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 	}
 	
 	for(int i=0; i<MARKER_COUNT; i++){
-		cout << sqrt(4*mass[i]/PI) << ',' << x_max[i]<< ',' <<x_min[i] << ',' << y_max[i]<< ',' <<y_min[i] << ';';
+		cumulative_value[i] /= cumulative_count[i];	
+		cout << (int) max_value[i] << ',' << cumulative_value[i] << ';';
+		cout << sqrt(4*mass[i]/PI) << ',' << x_max[i]-x_min[i] << ',' << y_max[i]-y_min[i] << ';';
 		//cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
 		}
 	cout << endl;

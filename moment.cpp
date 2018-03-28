@@ -139,19 +139,19 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 	double *moment_x, *moment_y, *mass;
 	double *cumulative_value, *cumulative_count; 
 	unsigned char *max_value;
-	moment_x = (double *) malloc(sizeof(double)*MARKER_COUNT);
-	moment_y = (double *)malloc(sizeof(double)*MARKER_COUNT);
-	mass = (double *) malloc(sizeof(double)*MARKER_COUNT);
+	moment_x = (double *) calloc(MARKER_COUNT,sizeof(double));
+	moment_y = (double *) calloc(MARKER_COUNT,sizeof(double));
+	mass = (double *) calloc(MARKER_COUNT,sizeof(double));
 	double *x_min, *x_max, *y_min, *y_max;
-	x_min = (double *) malloc(sizeof(double)*MARKER_COUNT);
-	y_min = (double *) malloc(sizeof(double)*MARKER_COUNT);
-	x_max = (double *) malloc(sizeof(double)*MARKER_COUNT);
-	y_max = (double *) malloc(sizeof(double)*MARKER_COUNT);
-	cumulative_count = (double *) malloc(sizeof(double)*MARKER_COUNT);
-	cumulative_value = (double *) malloc(sizeof(double)*MARKER_COUNT);
-	max_value = (unsigned char *) malloc(sizeof(char)*MARKER_COUNT);
+	x_min = (double *) calloc(MARKER_COUNT,sizeof(double));
+	y_min = (double *) calloc(MARKER_COUNT,sizeof(double));
+	x_max = (double *) calloc(MARKER_COUNT,sizeof(double));
+	y_max = (double *) calloc(MARKER_COUNT,sizeof(double));
+	cumulative_count = (double *) (double *) calloc(MARKER_COUNT,sizeof(double));
+	cumulative_value = (double *) (double *) calloc(MARKER_COUNT,sizeof(double));
+	max_value = (unsigned char *) calloc(MARKER_COUNT,sizeof(char));
 	
-	double moment_x_temp, moment_y_temp, mass_temp;
+	int moment_x_temp, moment_y_temp, mass_temp;
 	
 	image_height = image.rows;
 	image_width = image.cols;
@@ -164,22 +164,22 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 	for (offset = image_width*image_height - 1; offset>0; offset--){
 	if (image.data[offset] > thre) {
 		moment_x_temp = (offset % image_width);
+		//moment_x_temp %= image_width;
 		moment_y_temp = (offset / image_width);
+		//moment_y_temp %= image_height;
 		if (moment_x_temp>separator){ // first row markers
 			for (int i=0; i<=8; i++){
 				if (moment_y_temp>margin1[i]){
-					moment_x[i]+= moment_x_temp;
-					moment_y[i]+= moment_y_temp;
 					mass[i]+=1.0;
+					moment_x[i] += (double) moment_x_temp;
+					moment_y[i] += (double) moment_y_temp;
 					cumulative_count[i]++;
 					cumulative_value[i]+=image.data[offset];
 					if (image.data[offset] > max_value[i]) max_value[i]= image.data[offset];
 					if (moment_x_temp>x_max[i]) x_max[i]= moment_x_temp;
 					if (moment_x_temp<x_min[i]) x_min[i]= moment_x_temp;
 					if (moment_y_temp>y_max[i]) y_max[i]= moment_y_temp;
-					if ((moment_y_temp<y_min[i]) && (moment_y_temp>margin1[i])) {
-						y_min[i]= moment_y_temp;
-						}
+					if ((moment_y_temp<y_min[i]) && (moment_y_temp>margin1[i])) y_min[i]= moment_y_temp;
 					break;
 					}
 				}
@@ -187,18 +187,16 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 		else { // second row markers
 			for (int i=9; i<=17; i++){
 				if (moment_y_temp>margin2[i-9]){
-					moment_x[i]+= moment_x_temp;
-					moment_y[i]+= moment_y_temp;
 					mass[i]+=1.0;
+					moment_x[i]+= (double) moment_x_temp;
+					moment_y[i]+= (double) moment_y_temp;
 					cumulative_count[i]++;
 					cumulative_value[i]+=image.data[offset];
 					if (image.data[offset] > max_value[i]) max_value[i] = image.data[offset];
 					if (moment_x_temp>x_max[i]) x_max[i]= moment_x_temp;
 					if (moment_x_temp<x_min[i]) x_min[i]= moment_x_temp;
 					if (moment_y_temp>y_max[i]) y_max[i]= moment_y_temp;
-					if ((moment_y_temp<y_min[i]) && (moment_y_temp>margin2[i-9])) {
-						y_min[i]= moment_y_temp;
-					}
+					if ((moment_y_temp<y_min[i]) && (moment_y_temp>margin2[i-9])) y_min[i]= moment_y_temp;
 					break;
 					}
 				}
@@ -207,10 +205,11 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 	}
 	
 	for(int i=0; i<MARKER_COUNT; i++){
-		cumulative_value[i] /= cumulative_count[i];	
-		cout << (int) max_value[i] << ',' << cumulative_value[i] << ';';
-		cout << sqrt(4*mass[i]/PI) << ',' << x_max[i]-x_min[i] << ',' << y_max[i]-y_min[i] << ';';
-		//cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
+		//cumulative_value[i] /= cumulative_count[i]; // average intensity	
+		//cout << (int) max_value[i] << ',' << cumulative_value[i] << ';';
+		//cout << sqrt(4*mass[i]/PI) << ',' << x_max[i]-x_min[i] << ',' << y_max[i]-y_min[i] << ';';
+		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
+		//cout << moment_x[i] << '\t' <<moment_y[i] << '\t' << mass[i] << endl;
 		}
 	cout << endl;
 	return(0);
@@ -423,9 +422,9 @@ int main(int argc, char **argv){
 	int upper= 620;
 	int lower= 130;
 	
-	int separator= 360;
-	int row1[9]={1624, 1374, 1140, 912, 719, 574, 416, 277, 81}; // right side
-	int row2[9]={1624, 1416, 1189, 992, 795, 637, 486, 360, 180}; // left side
+	int separator= 400;
+	int row1[9]={1640, 1340, 1092, 888, 720, 554, 394, 230, 32}; // right side
+	int row2[9]={1668, 1454, 1240, 1028, 830, 670, 518, 366, 190}; // left side
 	
 	if (image_height && image_width) {
 		// in case of rotated camera, 3 lines
@@ -434,7 +433,7 @@ int main(int argc, char **argv){
 		flip(image, image, 1);
 		// or it is already in grayscale
 		//cvtColor(image_input, image, CV_BGR2GRAY);
-		// imshow("disp",image); waitKey(0);
+		//imshow("disp",image); waitKey(0);
 		if (!strcmp(argv[1],"h")) calculate_histogram(atoi(argv[3]));
 		else if (!strcmp(argv[1],"g")) calculate_moment_gray(atoi(argv[3]));
 		else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);

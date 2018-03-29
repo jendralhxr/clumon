@@ -2,6 +2,7 @@
 #define MULTIPLIER_LATERAL 10
 #define MULTIPLIER_VERTICAL 10
 #include <stdio.h>
+#include <stdlib.h>
 
 FILE *input;
 FILE *output;

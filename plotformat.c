@@ -1,6 +1,6 @@
 #define MULTIPLIER 80 // bear in mind abount the cm and mm :D
-#define MULTIPLIER_LATERAL 10
-#define MULTIPLIER_VERTICAL 10
+#define MULTIPLIER_LATERAL 20
+#define MULTIPLIER_VERTICAL 20
 #include <stdio.h>
 #include <stdlib.h>
 

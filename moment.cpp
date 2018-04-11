@@ -59,22 +59,26 @@ unsigned int calculate_histogram(int threshold){
 
 unsigned int calculate_width(int thresholdval, int sep){
 	double moment_x_temp, moment_y_temp, mass_temp, moment_x, moment_y;
+	image_width= image.cols;
+	image_height= image.rows;
+
 	int x_min=image_width, x_max=0, y_min=image_height, y_max=0;
 	
+	mass_temp=0;
+	moment_x= 0;
+	moment_y= 0;
+			
+	printf("w%d,h%d\n",image_width, image_height);
 	offset = image_width*image_height - 1;
 	width:
 	if (image.data[offset] > thresholdval) {
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
-		if (((offset % image_width) > 765) &&\
-			((offset % image_width) < 1090) &&\
-			((offset / image_width) > 414) &&\
-			((offset / image_width) < 600)\
-			){
-			if (moment_y_temp>y_max) y_max= moment_y_temp;
-			if (moment_y_temp<y_min) y_min= moment_y_temp;
-			if (moment_x_temp>x_max) x_max= moment_x_temp;
-			if (moment_x_temp<x_min) x_min= moment_x_temp;
+		if ((offset % image_width) > sep){
+			//if (moment_y_temp>y_max) y_max= moment_y_temp;
+			//if (moment_y_temp<y_min) y_min= moment_y_temp;
+			//if (moment_x_temp>x_max) x_max= moment_x_temp;
+			//if (moment_x_temp<x_min) x_min= moment_x_temp;
 			mass_temp++;
 			moment_x += moment_x_temp;
 			moment_y += moment_y_temp;
@@ -83,7 +87,7 @@ unsigned int calculate_width(int thresholdval, int sep){
 		
 	offset--;
 	if (offset>image_width) goto width;
-	printf("%s: %.0lf %.2lf %.2lf %d %d \n",filename, mass_temp, moment_x/mass_temp, moment_y/mass_temp, x_max-x_min, y_max-y_min);
+	printf("%.4lf,%.4lf\n",moment_x/mass_temp, moment_y/mass_temp);
 	
 	/*
 	// minimum width/height
@@ -352,7 +356,7 @@ restofimage:
 	return(mass_temp);
 }
 
-int cvblob(){
+int cvblob(int sep){
 	float moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
 	float moment_x_temp, moment_y_temp, mass_temp;
 	// Set up the detector with default parameters.
@@ -368,8 +372,8 @@ int cvblob(){
 
 	// Detect blobs.
 	std::vector<KeyPoint> keypoints;
-	//Mat invert; bitwise_not(image, invert); detector.detect(invert, keypoints);
-	detector.detect(image, keypoints);
+	Mat invert; bitwise_not(image, invert); detector.detect(invert, keypoints);
+	//detector.detect(image, keypoints);
 
 	int n=0; 
 	for (std::vector<KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end(); ++it){
@@ -400,7 +404,7 @@ int cvblob(){
 	// the log	
 	for (int i=n-1; i>=0; i--){
 		//logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] <<';';
-		cout << moment_x[i] 	<< ',' << moment_y[i] << ';';
+		if (moment_x[i] < sep)	cout << moment_x[i] << ',' << moment_y[i] << ';';
 		}
 	//logfile << n;	
 	cout << endl;
@@ -417,14 +421,14 @@ int main(int argc, char **argv){
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	int mrgins[MARKER_COUNT]={2048};
 	
-	int side1[9]={1614, 1366, 1104, 902, 712, 550, 392, 236, 75}; // right side
+	int side1[9]={1614, 1380, 1130, 940, 760, 550, 392, 236, 75}; // right side
 	int side2[9]={1590, 1320, 1106, 878, 690, 538, 390, 240, 68}; // left side
 	int upper= 620;
 	int lower= 130;
 	
-	int separator= 400;
-	int row1[9]={1640, 1340, 1092, 888, 720, 554, 394, 230, 32}; // right side
-	int row2[9]={1668, 1454, 1240, 1028, 830, 670, 518, 366, 190}; // left side
+	int separator= 447;
+	int row1[9]={1689, 1410, 1152, 951, 777, 615, 440, 288, 100}; // right side
+	int row2[9]={1653, 1440, 1218, 1002, 828, 642, 500, 351, 210}; // left side
 	
 	if (image_height && image_width) {
 		// in case of rotated camera, 3 lines
@@ -442,7 +446,7 @@ int main(int argc, char **argv){
 		else if (!strcmp(argv[1],"x")) calculate_refw(atoi(argv[3]), upper, lower, separator, side1, side2);
 		else if (!strcmp(argv[1],"w")) calculate_width(atoi(argv[3]), atoi(argv[4]));
 		else if (!strcmp(argv[1],"r")) read_row(atoi(argv[3]));
-		else if (!strcmp(argv[1],"v")) cvblob();
+		else if (!strcmp(argv[1],"v")) cvblob(atoi(argv[3]));
 		else {
 			cout << "wrong argument for argv[1]" << endl; 
 			return(1);
@@ -455,5 +459,3 @@ int main(int argc, char **argv){
 		}
 	return(0);
 }
-
-

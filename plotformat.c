@@ -1,6 +1,6 @@
 #define MULTIPLIER 80 // bear in mind abount the cm and mm :D
-#define MULTIPLIER_LATERAL 20
-#define MULTIPLIER_VERTICAL 20
+#define MULTIPLIER_LATERAL 10
+#define MULTIPLIER_VERTICAL 10
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,39 +28,41 @@ int parse18dualside(){
 		sprintf(filename, "deck%04d", t);
 		output= fopen(filename, "w");
 		fprintf(output,"# t=%d\n",t);
-		fprintf(output,"%f %f %f\n", 0.0,   MULTIPLIER_LATERAL*point[0], 	MULTIPLIER_VERTICAL*point[1]);
-		fprintf(output,"%f %f %f\n\n", 0.0,   MULTIPLIER_LATERAL*point[18]+32, MULTIPLIER_VERTICAL*point[19]);
-		fprintf(output,"%f %f %f\n", 50.0,  MULTIPLIER_LATERAL*point[2], 	MULTIPLIER_VERTICAL*point[3]);
-		fprintf(output,"%f %f %f\n\n", 50.0,  MULTIPLIER_LATERAL*point[20]+32, MULTIPLIER_VERTICAL*point[21]);
-		fprintf(output,"%f %f %f\n", 100.0, MULTIPLIER_LATERAL*point[4], 	MULTIPLIER_VERTICAL*point[5]);
-		fprintf(output,"%f %f %f\n\n", 100.0, MULTIPLIER_LATERAL*point[22]+32, MULTIPLIER_VERTICAL*point[23]);
-		fprintf(output,"%f %f %f\n", 150.0, MULTIPLIER_LATERAL*point[6], 	MULTIPLIER_VERTICAL*point[7]);
-		fprintf(output,"%f %f %f\n\n", 150.0, MULTIPLIER_LATERAL*point[24]+32, MULTIPLIER_VERTICAL*point[25]);
-		fprintf(output,"%f %f %f\n", 200.0, MULTIPLIER_LATERAL*point[8], 	MULTIPLIER_VERTICAL*point[9]);
-		fprintf(output,"%f %f %f\n\n", 200.0, MULTIPLIER_LATERAL*point[26]+32, MULTIPLIER_VERTICAL*point[27]);
-		fprintf(output,"%f %f %f\n", 250.0, MULTIPLIER_LATERAL*point[10], 	MULTIPLIER_VERTICAL*point[11]);
-		fprintf(output,"%f %f %f\n\n", 250.0, MULTIPLIER_LATERAL*point[28]+32, MULTIPLIER_VERTICAL*point[29]);
-		fprintf(output,"%f %f %f\n", 300.0, MULTIPLIER_LATERAL*point[12], 	MULTIPLIER_VERTICAL*point[13]);
-		fprintf(output,"%f %f %f\n\n", 300.0, MULTIPLIER_LATERAL*point[30]+32, MULTIPLIER_VERTICAL*point[31]);
-		fprintf(output,"%f %f %f\n", 350.0, MULTIPLIER_LATERAL*point[14], 	MULTIPLIER_VERTICAL*point[15]);
-		fprintf(output,"%f %f %f\n\n", 350.0, MULTIPLIER_LATERAL*point[32]+32, MULTIPLIER_VERTICAL*point[33]);
-		fprintf(output,"%f %f %f\n", 400.0, MULTIPLIER_LATERAL*point[16], 	MULTIPLIER_VERTICAL*point[17]);
-		fprintf(output,"%f %f %f\n\n", 400.0, MULTIPLIER_LATERAL*point[34]+32, MULTIPLIER_VERTICAL*point[35]);
+		// 0	72	122	172	222	272	322	372	414
+		fprintf(output,"%f %f %f\n", -7.0,   MULTIPLIER_LATERAL*point[0], 	MULTIPLIER_VERTICAL*point[1]);
+		fprintf(output,"%f %f %f\n\n", -7.0,   MULTIPLIER_LATERAL*point[18]+32, MULTIPLIER_VERTICAL*point[19]);
+		fprintf(output,"%f %f %f\n", 65.0,  MULTIPLIER_LATERAL*point[2], 	MULTIPLIER_VERTICAL*point[3]);
+		fprintf(output,"%f %f %f\n\n", 65.0,  MULTIPLIER_LATERAL*point[20]+32, MULTIPLIER_VERTICAL*point[21]);
+		fprintf(output,"%f %f %f\n", 115.0, MULTIPLIER_LATERAL*point[4], 	MULTIPLIER_VERTICAL*point[5]);
+		fprintf(output,"%f %f %f\n\n", 115.0, MULTIPLIER_LATERAL*point[22]+32, MULTIPLIER_VERTICAL*point[23]);
+		fprintf(output,"%f %f %f\n", 165.0, MULTIPLIER_LATERAL*point[6], 	MULTIPLIER_VERTICAL*point[7]);
+		fprintf(output,"%f %f %f\n\n", 165.0, MULTIPLIER_LATERAL*point[24]+32, MULTIPLIER_VERTICAL*point[25]);
+		fprintf(output,"%f %f %f\n", 215.0, MULTIPLIER_LATERAL*point[8], 	MULTIPLIER_VERTICAL*point[9]);
+		fprintf(output,"%f %f %f\n\n", 215.0, MULTIPLIER_LATERAL*point[26]+32, MULTIPLIER_VERTICAL*point[27]);
+		fprintf(output,"%f %f %f\n", 265.0, MULTIPLIER_LATERAL*point[10], 	MULTIPLIER_VERTICAL*point[11]);
+		fprintf(output,"%f %f %f\n\n", 265.0, MULTIPLIER_LATERAL*point[28]+32, MULTIPLIER_VERTICAL*point[29]);
+		fprintf(output,"%f %f %f\n", 315.0, MULTIPLIER_LATERAL*point[12], 	MULTIPLIER_VERTICAL*point[13]);
+		fprintf(output,"%f %f %f\n\n", 315.0, MULTIPLIER_LATERAL*point[30]+32, MULTIPLIER_VERTICAL*point[31]);
+		fprintf(output,"%f %f %f\n", 365.0, MULTIPLIER_LATERAL*point[14], 	MULTIPLIER_VERTICAL*point[15]);
+		fprintf(output,"%f %f %f\n\n", 365.0, MULTIPLIER_LATERAL*point[32]+32, MULTIPLIER_VERTICAL*point[33]);
+		fprintf(output,"%f %f %f\n", 407.0, MULTIPLIER_LATERAL*point[16], 	MULTIPLIER_VERTICAL*point[17]);
+		fprintf(output,"%f %f %f\n\n", 407.0, MULTIPLIER_LATERAL*point[34]+32, MULTIPLIER_VERTICAL*point[35]);
 		fprintf(output,"\n");
 		fclose(output);
 		
 		sprintf(filename2, "deck%04dn", t);
 		output2= fopen(filename2, "w");
 		fprintf(output2,"# t=%d\n",t);
-		fprintf(output2,"%f %f %f\n", 0.0,   MULTIPLIER_LATERAL*point[0], 	MULTIPLIER_VERTICAL*point[1]);
-		fprintf(output2,"%f %f %f\n", 50.0,  MULTIPLIER_LATERAL*point[2], 	MULTIPLIER_VERTICAL*point[3]);
-		fprintf(output2,"%f %f %f\n", 100.0, MULTIPLIER_LATERAL*point[4], 	MULTIPLIER_VERTICAL*point[5]);
-		fprintf(output2,"%f %f %f\n", 150.0, MULTIPLIER_LATERAL*point[6], 	MULTIPLIER_VERTICAL*point[7]);
-		fprintf(output2,"%f %f %f\n", 200.0, MULTIPLIER_LATERAL*point[8], 	MULTIPLIER_VERTICAL*point[9]);
-		fprintf(output2,"%f %f %f\n", 250.0, MULTIPLIER_LATERAL*point[10], 	MULTIPLIER_VERTICAL*point[11]);
-		fprintf(output2,"%f %f %f\n", 300.0, MULTIPLIER_LATERAL*point[12], 	MULTIPLIER_VERTICAL*point[13]);
-		fprintf(output2,"%f %f %f\n", 350.0, MULTIPLIER_LATERAL*point[14], 	MULTIPLIER_VERTICAL*point[15]);
-		fprintf(output2,"%f %f %f\n", 400.0, MULTIPLIER_LATERAL*point[16], 	MULTIPLIER_VERTICAL*point[17]);
+		// 0	72	122	172	222	272	315	372	407
+		fprintf(output2,"%f %f %f\n", -7.0,   MULTIPLIER_LATERAL*point[0], 	MULTIPLIER_VERTICAL*point[1]);
+		fprintf(output2,"%f %f %f\n", 65.0,  MULTIPLIER_LATERAL*point[2], 	MULTIPLIER_VERTICAL*point[3]);
+		fprintf(output2,"%f %f %f\n", 115.0, MULTIPLIER_LATERAL*point[4], 	MULTIPLIER_VERTICAL*point[5]);
+		fprintf(output2,"%f %f %f\n", 165.0, MULTIPLIER_LATERAL*point[6], 	MULTIPLIER_VERTICAL*point[7]);
+		fprintf(output2,"%f %f %f\n", 215.0, MULTIPLIER_LATERAL*point[8], 	MULTIPLIER_VERTICAL*point[9]);
+		fprintf(output2,"%f %f %f\n", 265.0, MULTIPLIER_LATERAL*point[10], 	MULTIPLIER_VERTICAL*point[11]);
+		fprintf(output2,"%f %f %f\n", 315.0, MULTIPLIER_LATERAL*point[12], 	MULTIPLIER_VERTICAL*point[13]);
+		fprintf(output2,"%f %f %f\n", 365.0, MULTIPLIER_LATERAL*point[14], 	MULTIPLIER_VERTICAL*point[15]);
+		fprintf(output2,"%f %f %f\n", 407.0, MULTIPLIER_LATERAL*point[16], 	MULTIPLIER_VERTICAL*point[17]);
 		fprintf(output2,"\n");
 		fclose(output2);
 		}

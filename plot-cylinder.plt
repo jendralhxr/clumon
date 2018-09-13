@@ -8,14 +8,14 @@ set mapping cylindrical
 set zzeroaxis
 set grid
 
-#set xrange [-10:410]
-#set zrange [-40:40]
-#set yrange [-80:80]
+set xrange [-6:6]
+set yrange [-6:6]
+set zrange [-.10:410]
 set xlabel "x"
 set ylabel "y"
 set zlabel "z"
 
+set view 60, 30, 1, 1
 splot ARG1 with lines ls 2
 
 #set ticslevel 0.0
-#set view 30,56,0.98

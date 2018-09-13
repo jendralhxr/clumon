@@ -49,7 +49,7 @@ int main(int argc, char **argv){
 	output= fopen(argv[2], "w");
 	linecount= atoi(argv[3]);
 	if (output==NULL){
-		perror("error opening input file");
+		perror("error opening output file");
 		return(1);
 		}
 	else printf("opening output file %s for %d lines\n",argv[2], linecount);

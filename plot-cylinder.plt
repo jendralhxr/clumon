@@ -16,6 +16,6 @@ set ylabel "y"
 set zlabel "z"
 
 set view 60, 30, 1, 1
-splot ARG1 with lines ls 2
+splot ARG1 with lines ls 2 title 'mode shape'
 
 #set ticslevel 0.0

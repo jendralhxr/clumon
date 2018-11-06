@@ -426,9 +426,9 @@ int main(int argc, char **argv){
 	int upper= 620;
 	int lower= 130;
 	
-	int separator= 447;
-	int row1[9]={1689, 1410, 1152, 951, 777, 615, 440, 288, 100}; // right side
-	int row2[9]={1653, 1440, 1218, 1002, 828, 642, 500, 351, 210}; // left side
+	int separator= 380;
+	int row1[9]={1640, 1432, 1256, 1060, 880, 680, 528, 338, 250}; // right side
+	int row2[9]={1656, 1427, 1200, 1004, 820, 664, 536, 360, 170}; // left side
 	
 	if (image_height && image_width) {
 		// in case of rotated camera, 3 lines

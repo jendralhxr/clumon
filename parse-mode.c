@@ -45,7 +45,7 @@ int main(int argc, char **argv){
 		tokennum=j;
 //		printf("first zero %d\n",tokenzero);
 		
-		fprintf(outFile,"\n%s;\t",tokens[0]);
+		fprintf(outFile,"%s;\t",tokens[0]);
 		// end sweep
 		for (j= tokenzero; j<tokennum; j++){
 			fprintf(outFile,"%s\t",tokens[j]);
@@ -54,6 +54,7 @@ int main(int argc, char **argv){
 		for (j= 1; j<tokenzero; j++){
 			fprintf(outFile,"%s\t",tokens[j]);
 			}
+		fprintf(outFile,"\n");
 		}
 	
 	fclose(inFile);

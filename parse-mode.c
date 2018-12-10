@@ -15,7 +15,7 @@ int i, j, tokennum, tokenzero;
 
 int main(int argc, char **argv){
 	int line, linenumber=strtol(argv[3],NULL,10);
-	printf("%d lines",linenumber);
+	printf("%s: parsed %d lines\n", argv[1], linenumber);
 	
 	inFile=fopen(argv[1],"r");
 	if (inFile==NULL){

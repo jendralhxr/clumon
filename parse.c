@@ -3,10 +3,10 @@
 #define SELECTROW 0
 FILE *text;
 
-int parse9pointsyonly(){
+int parse9pointsyonly(int lines){
 	double val[3][9];
 	int i, j, n;
-	for (n=0; n<atoi(argv[2]); n++){
+	for (n=0; n<lines; n++){
 		// 0	-0.04	-0.04	-0.04	-0.04	-0.03	-0.04	-0.04	-0.04
 		fscanf(text,"%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",\
 			&(val[i][0]), &(val[i][1]), &(val[i][2]), &(val[i][3]), &(val[i][4]),\
@@ -28,6 +28,6 @@ int parse9pointsyonly(){
 
 int main(int argc, char **argv){
 	text= fopen(argv[1], "r");
-	//parse9pointsyonly();
+	parse9pointsyonly(atoi(argv[2]));
 	return(atoi(argv[2]));
 	}

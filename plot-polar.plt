@@ -1,3 +1,5 @@
+#!/usr/bin/gnuplot
+
 set terminal pngcairo  enhanced font "arial,10" fontscale 1.0 size 600, 600 
 set output ARG2
 set border

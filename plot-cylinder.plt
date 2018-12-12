@@ -1,4 +1,5 @@
 #!/usr/bin/gnuplot
+
 set terminal pngcairo enhanced font "arial,10" fontscale 1.0 size 600, 600
 #set terminal epslatex color colortext
 #set terminal postscript eps enhanced color font 'Arial,16' linewidth 2

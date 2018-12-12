@@ -16,7 +16,7 @@ set rrange [ARG3:ARG4]
 set rtics  mirror ARG3,ARG5,ARG4 
 
 set grid polar 0.17452 # pi/18, 72 points
-set rlabel "first mode freq (Hz)"
+set rlabel "abc"
 
 freq = ARG1
 plot freq with lines ls 2	    

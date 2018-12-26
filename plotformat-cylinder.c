@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MULTIPLIER_RAD 10
+#define MULTIPLIER_RAD 1
 
 FILE *input;
 FILE *output;

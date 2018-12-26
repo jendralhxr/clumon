@@ -17,7 +17,6 @@
 using namespace std;
 using namespace cv;
 
-
 ofstream logfile;
 char filename[256];
 
@@ -216,6 +215,34 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 		//cout << moment_x[i] << '\t' <<moment_y[i] << '\t' << mass[i] << endl;
 		}
 	cout << endl;
+
+// draw here
+	line(image, Point(separator,0), Point(separator,image_height), Scalar(224, 224, 160), 1, 8, 0);
+	// right lanes, 9 markers
+	line(image, Point(image_width,margin1[0]), Point(separator,margin1[0]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[1]), Point(separator,margin1[1]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[2]), Point(separator,margin1[2]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[3]), Point(separator,margin1[3]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[4]), Point(separator,margin1[4]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[5]), Point(separator,margin1[5]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[6]), Point(separator,margin1[6]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[7]), Point(separator,margin1[7]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(image_width,margin1[8]), Point(separator,margin1[8]), Scalar(224, 224, 160), 1, 8, 0);
+	// right lanes, 9 markers
+	line(image, Point(0,margin2[0]), Point(separator,margin2[0]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[1]), Point(separator,margin2[1]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[2]), Point(separator,margin2[2]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[3]), Point(separator,margin2[3]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[4]), Point(separator,margin2[4]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[5]), Point(separator,margin2[5]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[6]), Point(separator,margin2[6]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[7]), Point(separator,margin2[7]), Scalar(224, 224, 160), 1, 8, 0);
+	line(image, Point(0,margin2[8]), Point(separator,margin2[8]), Scalar(224, 224, 160), 1, 8, 0);
+	
+	//test, comment this out later
+	namedWindow( "disp", WINDOW_NORMAL );// Create a window for display.
+    imshow("disp",image); waitKey(0);
+   
 	return(0);
 	} 
 
@@ -426,9 +453,9 @@ int main(int argc, char **argv){
 	int upper= 620;
 	int lower= 130;
 	
-	int separator= 380;
-	int row1[9]={1640, 1432, 1256, 1060, 880, 680, 528, 338, 250}; // right side
-	int row2[9]={1656, 1427, 1200, 1004, 820, 664, 536, 360, 170}; // left side
+	int separator= 383;
+	int row1[9]={1630, 1433, 1230, 1020, 855, 690, 513, 372, 230}; // right side
+	int row2[9]={1680, 1440, 1197, 1019, 844, 677, 538, 355, 172}; // left side
 	
 	if (image_height && image_width) {
 		// in case of rotated camera, 3 lines

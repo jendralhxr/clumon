@@ -240,8 +240,8 @@ unsigned int calculate_rower(int separator, int *margin1, int *margin2, int thre
 	line(image, Point(0,margin2[8]), Point(separator,margin2[8]), Scalar(224, 224, 160), 1, 8, 0);
 	
 	//test, comment this out later
-	namedWindow( "disp", WINDOW_NORMAL );// Create a window for display.
-    imshow("disp",image); waitKey(0);
+	//namedWindow( "disp", WINDOW_NORMAL );// Create a window for display.
+    //imshow("disp",image); waitKey(0);
    
 	return(0);
 	} 
@@ -454,7 +454,7 @@ int main(int argc, char **argv){
 	int lower= 130;
 	
 	int separator= 383;
-	int row1[9]={1630, 1433, 1230, 1020, 855, 690, 513, 372, 230}; // right side
+	int row1[9]={1630, 1433, 1230, 1020, 855, 690, 513, 382, 230}; // right side
 	int row2[9]={1680, 1440, 1197, 1019, 844, 677, 538, 355, 172}; // left side
 	
 	if (image_height && image_width) {

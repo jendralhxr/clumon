@@ -10,14 +10,14 @@
 #define MAX_OBJECTS 1024
 #define MASS_MINIMUM 200
 #define OBJECT_DISTANCE_MAX 120
-#define MARKER_COUNT 11
+#define MARKER_COUNT 9
 using namespace std;
 using namespace cv;
 
 ofstream logfile;
 char filename[256];
 
-Mat image, image_input;
+Mat image, image_input, temp;
 int image_height, image_width;
 int framenum;
 unsigned int offset;
@@ -56,8 +56,9 @@ niner:
 	offset--;
 	if (offset>image_width) goto niner;
 	
-	for(int i=0; i<MARKER_COUNT; i++){
-		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
+	for(int i=8; i>=0; i--){
+//		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
+		cout << setprecision(8) << moment_y[i]/mass[i] << ',' << moment_x[i]/mass[i] << ';';
 		}
 	cout << endl;
 	return(0);
@@ -91,9 +92,12 @@ int main(int argc, char **argv){
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
-	int mrgins[MARKER_COUNT]={220, 440, 650, 850, 1060, 1246, 1400, 1566, 1726, 1889, 2048};
+	//int mrgins[MARKER_COUNT]={220, 440, 650, 850, 1060, 1246, 1400, 1566, 1726, 1889, 2048};
+	int mrgins[MARKER_COUNT]={280, 468, 640, 800, 1000, 1200, 1440, 1660, 2000};
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
+		//transpose(temp, image);  // two lines, rotate 90 deg clockwise
+		//flip(image, image, 1);
 		if (!strcmp(argv[1],"h")) calculate_historam();
 		else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
 		else {

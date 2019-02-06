@@ -33,8 +33,8 @@ int main(int argc, char **argv){
 		buffer[strlen(buffer)-2]=NULL;
 		//printf("%s",buffer);
 	
-		// parse a lineman
-		// find last first containing zero;
+		// parse a line
+		// find first zero
 		for (j = 0, str1 = buffer; ; j++, str1 = NULL){
 			token = strtok_r(str1, ";\t", &saveptr1);
 	        if (token == NULL) break;

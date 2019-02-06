@@ -9,8 +9,8 @@ set mapping cylindrical
 set zzeroaxis
 set grid
 
-set xrange [-6:6]
-set yrange [-6:6]
+set xrange [-1:1]
+set yrange [-1:1]
 set zrange [-.10:410]
 set xlabel "x"
 set ylabel "y"

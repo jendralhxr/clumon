@@ -39,16 +39,19 @@ unsigned int calculate_niner(int *margin){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
 	double moment_x_temp, moment_y_temp, mass_temp;
 	
+		
 	offset = image_width*image_height - 1;
 niner:
 	if (image.data[offset] > THRESHOLD_GRAY) {
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
+				
 		for (int i=0; i<MARKER_COUNT; i++){
-			if (moment_x_temp<margin[i]){
+			if (moment_x_temp>margin[i]){
+				printf("asdaksljdaskld");
 				moment_x[i]+= moment_x_temp;
 				moment_y[i]+= moment_y_temp;
-				mass[i]++;
+				mass[i]+= 1.0;
 				break;
 				}
 			}
@@ -58,7 +61,7 @@ niner:
 	
 	for(int i=8; i>=0; i--){
 //		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
-		cout << setprecision(8) << moment_y[i]/mass[i] << ',' << moment_x[i]/mass[i] << ';';
+		cout << setprecision(8) << moment_y[i] << ',' << moment_x[i] << ',' << mass[i] << ';';
 		}
 	cout << endl;
 	return(0);
@@ -93,7 +96,8 @@ int main(int argc, char **argv){
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	//int mrgins[MARKER_COUNT]={220, 440, 650, 850, 1060, 1246, 1400, 1566, 1726, 1889, 2048};
-	int mrgins[MARKER_COUNT]={280, 468, 640, 800, 1000, 1200, 1440, 1660, 2000};
+	//int mrgins[MARKER_COUNT]={100, 310, 482, 654, 800, 1014, 1230, 1440, 1680};
+	int mrgins[MARKER_COUNT]={1680, 1440, 1230, 1014, 800, 654, 482, 310, 100};
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
 		//transpose(temp, image);  // two lines, rotate 90 deg clockwise

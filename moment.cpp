@@ -448,16 +448,22 @@ int main(int argc, char **argv){
 	//printf("%s %d %d: ",filename, image_width, image_height);
 	int mrgins[MARKER_COUNT]={2048};
 	
-	int side1[9]={1614, 1380, 1130, 940, 760, 550, 392, 236, 75}; // right side
-	int side2[9]={1590, 1320, 1106, 878, 690, 538, 390, 240, 68}; // left side
+	int side1[9]={1695, 1518, 1358, 1168, 980, 740, 522, 304, 110}; // right side
+	int side2[9]={1695, 1518, 1358, 1168, 980, 740, 522, 304, 110}; // right side
+//	int side2[9]={1590, 1320, 1106, 878, 690, 538, 390, 240, 68}; // left side
 	int upper= 620;
 	int lower= 130;
 	
-	int separator= 383;
-	int row1[9]={1630, 1433, 1230, 1020, 855, 690, 513, 382, 230}; // right side
-	int row2[9]={1680, 1440, 1197, 1019, 844, 677, 538, 355, 172}; // left side
+//	int mrgins[MARKER_COUNT]={1680, 1440, 1230, 1014, 800, 654, 482, 310, 100};
+//	int row1[MARKER_COUNT]={1680, 1440, 1230, 1014, 800, 654, 482, 310, 100};
+
+//geee
+	int separator= 280;
+	int row1[9]={1677, 1523, 1340, 1168, 951, 730, 520, 289, 80}; // right side
+	int row2[9]={1677, 1523, 1340, 1168, 951, 730, 520, 289, 80}; // right side
 	
 	if (image_height && image_width) {
+
 		// in case of rotated camera, 3 lines
 		cvtColor(image_input, temp, CV_BGR2GRAY);
 		transpose(temp, image);  // two lines, rotate 90 deg clockwise

@@ -35,6 +35,24 @@ unsigned int calculate_historam(){
 		}
 	}
 
+unsigned int calculate_midline(int x1, int y1, int x2, int y2, int threshold){
+	float edge1x=image_width, edge1y; // leftmost
+	float edge2x=0, edge2y; // rightmost
+	for (int y= y2; y>y1; y--){
+		for (int x= x2; x>x1; x--){
+			if (image.data[y*image_width+x] > threshold){
+				if (x<edge1x){
+					edge1x= x; edge1y=y;
+					}
+				if (x>edge2x){
+					edge2x= x; edge2y=y;
+					}	
+				}
+			} 
+		}
+	printf("center: (%f,%f)\n",(float(edge1x)+float(edge2x))/float(2), (float(edge1y)+float(edge2y))/float(2));
+	}
+
 unsigned int calculate_niner(int *margin){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
 	double moment_x_temp, moment_y_temp, mass_temp;
@@ -95,8 +113,6 @@ int main(int argc, char **argv){
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
-	//int mrgins[MARKER_COUNT]={220, 440, 650, 850, 1060, 1246, 1400, 1566, 1726, 1889, 2048};
-	//int mrgins[MARKER_COUNT]={100, 310, 482, 654, 800, 1014, 1230, 1440, 1680};
 	int mrgins[MARKER_COUNT]={1680, 1440, 1230, 1014, 800, 654, 482, 310, 100};
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
@@ -104,8 +120,9 @@ int main(int argc, char **argv){
 		//flip(image, image, 1);
 		if (!strcmp(argv[1],"h")) calculate_historam();
 		else if (!strcmp(argv[1],"c")) calculate_niner(mrgins);
+		else if (!strcmp(argv[1],"m")) calculate_midline(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]));
 		else {
-			cout << "put either 'h' or 'c' for argv[1]" << endl; 
+			cout << "check argv[1]" << endl; 
 			return(0);
 			}
 		//

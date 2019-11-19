@@ -2,9 +2,9 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv4/opencv2/opencv.hpp>
+#include <opencv4/opencv2/core/core.hpp>
+#include <opencv4/opencv2/highgui/highgui.hpp>
 #include <math.h>
 
 #define THRESHOLD_GRAY 10
@@ -393,14 +393,14 @@ int cvblob(int sep){
 	params.filterByCircularity = false;
 	params.filterByConvexity = true;
 	params.filterByInertia = true;
-	//params.maxThreshold = 220;
-	//params.minThreshold = 100;
-	SimpleBlobDetector detector(params);
-
+	params.maxThreshold = 220;
+	params.minThreshold = 100;
+	SimpleBlobDetector detector;
+	
 	// Detect blobs.
 	std::vector<KeyPoint> keypoints;
 	Mat invert; bitwise_not(image, invert); detector.detect(invert, keypoints);
-	//detector.detect(image, keypoints);
+	detector.detect(image, keypoints);
 
 	int n=0; 
 	for (std::vector<KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end(); ++it){
@@ -431,7 +431,8 @@ int cvblob(int sep){
 	// the log	
 	for (int i=n-1; i>=0; i--){
 		//logfile << moment_x[i] << ',' << moment_y[i] << ',' << mass[i] <<';';
-		if (moment_x[i] < sep)	cout << moment_x[i] << ',' << moment_y[i] << ';';
+		//if (moment_x[i] < sep)	cout << moment_x[i] << ',' << moment_y[i] << ';';
+		cout << moment_x[i] << ',' << moment_y[i] << ';';
 		}
 	//logfile << n;	
 	cout << endl;

@@ -6,7 +6,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <math.h>
 
-#define THRESHOLD_GRAY 15
+#define THRESHOLD_GRAY 20
 #define MAX_OBJECTS 1024
 #define MASS_MINIMUM 200
 #define OBJECT_DISTANCE_MAX 120
@@ -50,13 +50,13 @@ unsigned int calculate_midline(int x1, int y1, int x2, int y2, int threshold){
 				}
 			} 
 		}
-	printf("center: (%f,%f)\n",(float(edge1x)+float(edge2x))/float(2), (float(edge1y)+float(edge2y))/float(2));
+	printf("center: (%f,%f %f,%f)\n", edge1x, edge1y, edge2x, edge2y);
+	//printf("center: (%f,%f)\n",(float(edge1x)+float(edge2x))/float(2), (float(edge1y)+float(edge2y))/float(2));
 	}
 
 unsigned int calculate_niner(int *margin){
 	double moment_x[MARKER_COUNT], moment_y[MARKER_COUNT], mass[MARKER_COUNT];
 	double moment_x_temp, moment_y_temp, mass_temp;
-	
 		
 	offset = image_width*image_height - 1;
 niner:
@@ -65,8 +65,7 @@ niner:
 		moment_y_temp = (offset / image_width);
 				
 		for (int i=0; i<MARKER_COUNT; i++){
-			if (moment_x_temp>margin[i]){
-				printf("asdaksljdaskld");
+			if ((moment_y_temp>margin[i]) && (moment_x_temp<760)){
 				moment_x[i]+= moment_x_temp;
 				moment_y[i]+= moment_y_temp;
 				mass[i]+= 1.0;
@@ -77,9 +76,10 @@ niner:
 	offset--;
 	if (offset>image_width) goto niner;
 	
-	for(int i=8; i>=0; i--){
-//		cout << setprecision(8) << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
-		cout << setprecision(8) << moment_y[i] << ',' << moment_x[i] << ',' << mass[i] << ';';
+	for(int i=MARKER_COUNT-6; i>=0; i--){
+		printf("%.6lf,%.6lf;", moment_x[i]/mass[i], moment_y[i]/mass[i]);
+		//cout << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
+		//cout << moment_y[i] << ',' << moment_x[i] << ',' << mass[i] << ';';
 		}
 	cout << endl;
 	return(0);
@@ -113,7 +113,7 @@ int main(int argc, char **argv){
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
-	int mrgins[MARKER_COUNT]={1680, 1440, 1230, 1014, 800, 654, 482, 310, 100};
+	int mrgins[MARKER_COUNT]={700, 584, 453, 240, 120, 20, 19, 18, 17};
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
 		//transpose(temp, image);  // two lines, rotate 90 deg clockwise

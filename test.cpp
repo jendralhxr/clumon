@@ -1,9 +1,12 @@
 // compile: g++ test.cpp  -pthread -lpthread `pkg-config --libs opencv`
-
+#define _GLIBCXX_USE_CXX11_ABI 0
 #include <iostream>
-#include <opencv4/opencv2/opencv.hpp>
-#include <opencv4/opencv2/core/core.hpp>
-#include <opencv4/opencv2/highgui/highgui.hpp>
+#include <iomanip>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include <math.h>
 #include "csv.h"
 
@@ -84,7 +87,7 @@ int main(int argc, char **argv) {
 
 	// image handling
 	//cvtColor(image_input, temp, CV_BGR2GRAY);
-	image_input = imread(argv[1], 1);
+	image_input = imread("xi00000.tif", 1);
 	cvtColor(image_input, image, COLOR_BGR2GRAY);
 	transpose(image, image);  // two lines, rotate 90 deg clockwise
 	flip(image, image, 1);

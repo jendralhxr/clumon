@@ -65,10 +65,10 @@ niner:
 		moment_y_temp = (offset / image_width);
 				
 		for (int i=0; i<MARKER_COUNT; i++){
-			if ((moment_y_temp>margin[i]) && (moment_x_temp<760)){
-				moment_x[i]+= moment_x_temp;
-				moment_y[i]+= moment_y_temp;
-				mass[i]+= 1.0;
+			if ((moment_x_temp>margin[i])){
+				moment_x[i]= moment_x[i]+ moment_x_temp;
+				moment_y[i]= moment_y[i]+ moment_y_temp;
+				mass[i]= mass[i]+ 1.0;
 				break;
 				}
 			}
@@ -76,7 +76,7 @@ niner:
 	offset--;
 	if (offset>image_width) goto niner;
 	
-	for(int i=MARKER_COUNT-6; i>=0; i--){
+	for(int i=MARKER_COUNT; i>=0; i--){
 		printf("%.6lf,%.6lf;", moment_x[i]/mass[i], moment_y[i]/mass[i]);
 		//cout << moment_x[i]/mass[i] << ',' << moment_y[i]/mass[i] << ';';
 		//cout << moment_y[i] << ',' << moment_x[i] << ',' << mass[i] << ';';
@@ -113,7 +113,9 @@ int main(int argc, char **argv){
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
-	int mrgins[MARKER_COUNT]={700, 584, 453, 240, 120, 20, 19, 18, 17};
+	
+	int mrgins[9]={820, 819, 640, 639, 460, 459, 270, 269, 268};
+	
 	if (image_height && image_width) {
 		cvtColor(image_input, image, CV_BGR2GRAY);
 		//transpose(temp, image);  // two lines, rotate 90 deg clockwise

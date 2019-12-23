@@ -1,10 +1,10 @@
 #include <iostream>
-#include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <opencv4/opencv2/opencv.hpp>
-#include <opencv4/opencv2/core/core.hpp>
-#include <opencv4/opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <math.h>
 
 #define THRESHOLD_GRAY 10
@@ -120,7 +120,7 @@ niner:
 		moment_x_temp = (offset % image_width);
 		moment_y_temp = (offset / image_width);
 		for (int i=0; i<MARKER_COUNT; i++){
-			if (moment_x_temp<margin[i]){
+			if (moment_y_temp<margin[i]){
 				moment_x[i]+= moment_x_temp;
 				moment_y[i]+= moment_y_temp;
 				mass[i]++;
@@ -447,7 +447,6 @@ int main(int argc, char **argv){
 	image_height = image_input.rows;
 	image_width = image_input.cols;
 	//printf("%s %d %d: ",filename, image_width, image_height);
-	int mrgins[MARKER_COUNT]={2048};
 	
 	int side1[9]={1695, 1518, 1358, 1168, 980, 740, 522, 304, 110}; // right side
 	int side2[9]={1695, 1518, 1358, 1168, 980, 740, 522, 304, 110}; // right side
@@ -455,13 +454,14 @@ int main(int argc, char **argv){
 	int upper= 620;
 	int lower= 130;
 	
-//	int mrgins[MARKER_COUNT]={1680, 1440, 1230, 1014, 800, 654, 482, 310, 100};
 //	int row1[MARKER_COUNT]={1680, 1440, 1230, 1014, 800, 654, 482, 310, 100};
 
 //geee
 	int separator= 280;
 	int row1[9]={1677, 1523, 1340, 1168, 951, 730, 520, 289, 80}; // right side
 	int row2[9]={1677, 1523, 1340, 1168, 951, 730, 520, 289, 80}; // right side
+	
+	int mrgins[MARKER_ROWS]={1680, 1440, 1230, 1200, 820, 640, 460, 270, 100};
 	
 	if (image_height && image_width) {
 

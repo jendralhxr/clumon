@@ -466,7 +466,7 @@ int main(int argc, char **argv){
 	if (image_height && image_width) {
 
 		// in case of rotated camera, 3 lines
-		cvtColor(image_input, temp, CV_BGR2GRAY);
+		cvtColor(image_input, temp, COLOR_BGR2GRAY);
 		transpose(temp, image);  // two lines, rotate 90 deg clockwise
 		flip(image, image, 1);
 		// or it is already in grayscale

@@ -1,19 +1,23 @@
-// compile: g++ test.cpp  -pthread -lpthread `pkg-config --libs opencv`
-#define _GLIBCXX_USE_CXX11_ABI 0
+// compile: g++ test.cpp  `pkg-config --libs opencv` -pthread -lpthread
+//#define _GLIBCXX_USE_CXX11_ABI 0
+//#define _GLIBCXX_USE_CXX17_ABI 0
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
 #include <math.h>
+#include <stdlib.h>
 #include "csv.h"
 
 #define THRESHOLD_GRAY 40
-#define DISTANCE 3 // px from marker edge
+#define DISTANCE 2 // px from marker edge
 unsigned int offset;
-unsigned int image_height, image_width;
+unsigned int image_height, image_width, n_max;
+unsigned int *centroid_x, *centroid_y, framenum;
+char filename[256];
 
 using namespace std;
 using namespace cv;
@@ -86,27 +90,39 @@ int main(int argc, char **argv) {
 	int a, b, c;
 
 	// image handling
-	//cvtColor(image_input, temp, CV_BGR2GRAY);
-	image_input = imread("xi00000.tif", 1);
+	sprintf(filename, "%s/xi%05d.tif", argv[1], framenum);
+	image_input = imread(filename, 1);
 	cvtColor(image_input, image, COLOR_BGR2GRAY);
 	transpose(image, image);  // two lines, rotate 90 deg clockwise
 	flip(image, image, 1);
-	
 	
 	image_height = image.rows;
 	image_width = image.cols;
 	//cout << image_width << "x" << image_height << endl;
 		
 	// parse approximate centroid location	
-	int n = 0;
+	int n=0, n_max;
 	while (in.read_row(a, b, c)) {
 		//cout << int(a) << ": " <<b << "," << c << endl;
-		calculate_moment(a, b, c); 
-		cout << ';'; 
-		n++;
+		n_max++;
+		centroid_x= (unsigned int *) realloc(centroid_x, sizeof(unsigned int) *n_max);
+		centroid_y= (unsigned int *) realloc(centroid_y, sizeof(unsigned int) *n_max);
+		centroid_x[a]= b;
+		centroid_y[a]= c;
 		}
-	cout << endl;
 	
+	for (framenum=0; framenum<atoi(argv[3]); framenum++){
+		sprintf(filename, "%s/xi%05d.tif", argv[1], framenum);
+		//printf("%s\n",filename);
+		cout << framenum << ";";
+		for (n=0; n<n_max; n++) {
+			calculate_moment(n, centroid_x[n], centroid_y[n]); 
+			cout << ";";
+			}
+		cout << endl;
+		}
+		
+		
 	//imshow("wa", image);
 	//waitKey(0);
 	}       

@@ -27,6 +27,7 @@ Mat image, image_input, temp;
 unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	unsigned int edge_top, edge_bottom, edge_left, edge_right;
 	double moment_x_temp, moment_y_temp, mass_temp;
+	double centroid_x_final, centroid_y_final;
 	int edge_band;
 	
 	// find edges
@@ -79,7 +80,11 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 		}
 	
 	// centroid position
-	cout << setprecision(8) << moment_x_temp/mass_temp << ',' << moment_y_temp/mass_temp;
+	centroid_x_final= moment_x_temp/mass_temp;
+	centroid_y_final= moment_y_temp/mass_temp;
+	centroid_x[markernumber] = int (centroid_x_final);
+	centroid_y[markernumber] = int (centroid_y_final);
+	cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
 	return(mass_temp);
 }
 
@@ -114,6 +119,10 @@ int main(int argc, char **argv) {
 	for (framenum=0; framenum<atoi(argv[3]); framenum++){
 		sprintf(filename, "%s/xi%05d.tif", argv[1], framenum);
 		//printf("%s\n",filename);
+		image_input = imread(filename, 1);
+		cvtColor(image_input, image, COLOR_BGR2GRAY);
+		transpose(image, image);  // two lines, rotate 90 deg clockwise
+		flip(image, image, 1);
 		cout << framenum << ";";
 		for (n=0; n<n_max; n++) {
 			calculate_moment(n, centroid_x[n], centroid_y[n]); 

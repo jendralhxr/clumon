@@ -14,6 +14,7 @@
 
 #define THRESHOLD_GRAY 40
 #define DISTANCE 2 // px from marker edge
+#define STEP 2
 unsigned int offset;
 unsigned int image_height, image_width, n_max;
 unsigned int *centroid_x, *centroid_y, framenum;
@@ -35,7 +36,11 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_top= y_mid; edge_top>0; edge_top--){
 		//cout << "top :" << edge_top << " " << x_mid  << " " << int (image.data[ edge_top*image_width + x_mid]) << " " <<edge_band<< endl;
-		if (image.data[ edge_top*image_width + x_mid] < THRESHOLD_GRAY) edge_band--;
+		if (image.data[ edge_top*image_width + x_mid] < THRESHOLD_GRAY) {
+			if (image.data[ edge_top*image_width + x_mid + STEP] > THRESHOLD_GRAY) x_mid+=STEP;
+			else if (image.data[ edge_top*image_width + x_mid - STEP] > THRESHOLD_GRAY) x_mid-=STEP;
+			else edge_band--;
+			}
 		else image.data[ edge_top*image_width + x_mid]= 255;
 		if (edge_band==0) break;
 		}
@@ -43,7 +48,11 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_bottom= y_mid; edge_bottom<image_height; edge_bottom++){
 		//cout << "bot :" << edge_bottom << " " << x_mid << " " << int (image.data[ edge_bottom*image_width + x_mid]) << " " <<edge_band<< endl;
-		if (image.data[ edge_bottom*image_width + x_mid ] < THRESHOLD_GRAY) edge_band--;
+		if (image.data[ edge_bottom*image_width + x_mid ] < THRESHOLD_GRAY) {
+			if (image.data[ edge_bottom*image_width + x_mid + STEP] > THRESHOLD_GRAY) x_mid+=STEP;
+			else if (image.data[ edge_bottom*image_width + x_mid - STEP] > THRESHOLD_GRAY) x_mid-=STEP;
+			else edge_band--;
+			}
 		else image.data[ edge_bottom*image_width + x_mid ]= 255;
 		if (edge_band==0) break;
 		}
@@ -51,7 +60,11 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_left= x_mid; edge_left>0; edge_left--){
 		//cout << "left:" << y_mid << " " << edge_left << " " << int (image.data[ y_mid*image_width + edge_left]) << " " <<edge_band<< endl;
-		if (image.data[ y_mid*image_width + edge_left ] < THRESHOLD_GRAY) edge_band--;
+		if (image.data[ y_mid*image_width + edge_left ] < THRESHOLD_GRAY) {
+			if (image.data[ (y_mid-STEP)*image_width + edge_left ] > THRESHOLD_GRAY) y_mid-=STEP;
+			else if (image.data[ (y_mid+STEP)*image_width + edge_left ] > THRESHOLD_GRAY) y_mid+=STEP;
+			else edge_band--;
+			}
 		else image.data[ y_mid*image_width + edge_left ]= 255;
 		if (edge_band==0) break;
 		}
@@ -59,7 +72,11 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_right= x_mid; edge_right<image_width; edge_right++){
 		//cout << "right:" << y_mid << " " << edge_right << " " << int (image.data[ y_mid*image_width + edge_right]) << " " <<edge_band<< endl;
-		if (image.data[ y_mid*image_width + edge_right ] < THRESHOLD_GRAY) edge_band--;
+		if (image.data[ y_mid*image_width + edge_right ] < THRESHOLD_GRAY) {
+			if (image.data[ (y_mid-STEP)*image_width + edge_right ] > THRESHOLD_GRAY) y_mid-=STEP;
+			else if (image.data[ (y_mid+STEP)*image_width + edge_right ] > THRESHOLD_GRAY) y_mid+=STEP;
+			else edge_band--;
+			}
 		else image.data[ y_mid*image_width + edge_right ]= 255;
 		if (edge_band==0) break;
 		}
@@ -129,9 +146,8 @@ int main(int argc, char **argv) {
 			cout << ";";
 			}
 		cout << endl;
+		
+		imshow("wa", image);
+		waitKey(0);
 		}
-		
-		
-	//imshow("wa", image);
-	//waitKey(0);
 	}       

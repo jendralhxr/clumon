@@ -1,4 +1,4 @@
-// compile: g++ test.cpp  `pkg-config --libs opencv` -pthread -lpthread
+// compile: g++ test.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
 //#define _GLIBCXX_USE_CXX11_ABI 0
 //#define _GLIBCXX_USE_CXX17_ABI 0
 #include <iostream>

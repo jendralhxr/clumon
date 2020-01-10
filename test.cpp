@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include "csv.h"
 
-#define THRESHOLD_GRAY 40
+#define THRESHOLD_GRAY 15
 #define DISTANCE 2 // px from marker edge
 #define STEP 2
 unsigned int offset;

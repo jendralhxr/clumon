@@ -1,4 +1,4 @@
-// compile: g++ test.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
+// compile: g++ markerref.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
 //#define _GLIBCXX_USE_CXX11_ABI 0
 //#define _GLIBCXX_USE_CXX17_ABI 0
 #include <iostream>
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
 			}
 		cout << endl;
 		
-		imshow("wa", image);
-		waitKey(0);
+		//imshow("wa", image);
+		//waitKey(0);
 		}
 	}       

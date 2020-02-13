@@ -111,17 +111,6 @@ int main(int argc, char **argv) {
 	in.read_header(io::ignore_extra_column, "marker", "x", "y");
 	int a, b, c;
 
-	// image handling
-	sprintf(filename, "%s/xi%05d.tif", argv[1], framenum);
-	image_input = imread(filename, 1);
-	cvtColor(image_input, image, COLOR_BGR2GRAY);
-	transpose(image, image);  // two lines, rotate 90 deg clockwise
-	flip(image, image, 1);
-	
-	image_height = image.rows;
-	image_width = image.cols;
-	//cout << image_width << "x" << image_height << endl;
-		
 	// parse approximate centroid location	
 	int n=0, n_max;
 	while (in.read_row(a, b, c)) {
@@ -134,12 +123,14 @@ int main(int argc, char **argv) {
 		}
 	
 	for (framenum=0; framenum<atoi(argv[3]); framenum++){
-		sprintf(filename, "%s/xi%05d.tif", argv[1], framenum);
+		sprintf(filename, "%s/xi%06d.tif", argv[1], framenum);
 		//printf("%s\n",filename);
 		image_input = imread(filename, 1);
 		cvtColor(image_input, image, COLOR_BGR2GRAY);
 		transpose(image, image);  // two lines, rotate 90 deg clockwise
 		flip(image, image, 1);
+		image_height = image.rows;
+		image_width = image.cols;
 		cout << framenum << ";";
 		for (n=0; n<n_max; n++) {
 			calculate_moment(n, centroid_x[n], centroid_y[n]); 

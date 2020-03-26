@@ -1,4 +1,4 @@
-// compile: g++ markerref.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
+// compile: g++ markervid.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
 //#define _GLIBCXX_USE_CXX11_ABI 0
 //#define _GLIBCXX_USE_CXX17_ABI 0
 #include <iostream>
@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include "csv.h"
 
-#define THRESHOLD_GRAY 15
+#define THRESHOLD_GRAY 40
 #define DISTANCE 2 // px from marker edge
 #define STEP 2
 unsigned int offset;
@@ -101,6 +101,7 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	centroid_y_final= moment_y_temp/mass_temp;
 	centroid_x[markernumber] = int (centroid_x_final);
 	centroid_y[markernumber] = int (centroid_y_final);
+	if (isnan(centroid_x_final)) imwrite("gogo.png", image);
 	cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
 	return(mass_temp);
 }
@@ -122,24 +123,28 @@ int main(int argc, char **argv) {
 		centroid_y[a]= c;
 		}
 	
-	for (framenum=0; framenum<atoi(argv[3]); framenum++){
-		sprintf(filename, "%s/xi%06d.tif", argv[1], framenum);
-		//printf("%s\n",filename);
-		image_input = imread(filename, 1);
-		if (framenum==0) imwrite("gogo.png", image_input);
-		cvtColor(image_input, image, COLOR_BGR2GRAY);
-		transpose(image, image);  // two lines, rotate 90 deg clockwise
-		flip(image, image, 1);
-		image_height = image.rows;
-		image_width = image.cols;
-		cout << framenum << ";";
-		for (n=0; n<n_max; n++) {
-			calculate_moment(n, centroid_x[n], centroid_y[n]); 
-			cout << ";";
+	VideoCapture cap(argv[1]); 
+    if(!cap.isOpened()) return -1;
+        
+	for (framenum=0; framenum<atoi(argv[4]); framenum++){
+		//sprintf(filename, "%s/xi%06d.tif", argv[1], framenum);
+		//image_input = imread(filename, 1);
+	    cap >> image_input; // get a new frame from camera
+    	if ((framenum>atoi(argv[3])) && (framenum<atoi(argv[4]))){
+			cvtColor(image_input, image, COLOR_BGR2GRAY);
+			transpose(image, image);  // two lines, rotate 90 deg clockwise
+			flip(image, image, 1);
+			image_height = image.rows;
+			image_width = image.cols;
+			cout << framenum << ";";
+			for (n=0; n<n_max; n++) {
+				calculate_moment(n, centroid_x[n], centroid_y[n]); 
+				cout << ";";
+				}
+			imshow("wa", image);
+			waitKey(1);
+			cout << endl;
 			}
-		cout << endl;
-		
-		//imshow("wa", image);
-		//waitKey(0);
+    	
 		}
 	}       

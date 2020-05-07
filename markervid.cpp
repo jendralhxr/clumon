@@ -31,7 +31,7 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	double moment_x_temp, moment_y_temp, mass_temp;
 	double centroid_x_final, centroid_y_final;
 	int edge_band;
-	
+		
 	// find edges
 	// ytop
 	edge_band= DISTANCE;
@@ -102,8 +102,9 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	centroid_y_final= moment_y_temp/mass_temp;
 	centroid_x[markernumber] = int (centroid_x_final);
 	centroid_y[markernumber] = int (centroid_y_final);
-	if (isnan(centroid_x_final)) imwrite("gogo.png", image);
+	//if (isnan(centroid_x_final)) imwrite("gogo.png", image);
 	cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
+	
 	return(mass_temp);
 }
 
@@ -114,10 +115,10 @@ int main(int argc, char **argv) {
 	int a, b, c;
 
 	// parse approximate centroid location	
-	int n=0, n_max;
+	int n=0, n_max=0;
 	while (in.read_row(a, b, c)) {
-		//cout << int(a) << ": " <<b << "," << c << endl;
 		n_max++;
+		cout << int(a) << ": " <<b << "," << c << "," << n_max <<   endl;
 		centroid_x= (unsigned int *) realloc(centroid_x, sizeof(unsigned int) *n_max);
 		centroid_y= (unsigned int *) realloc(centroid_y, sizeof(unsigned int) *n_max);
 		centroid_x[a]= b;
@@ -128,6 +129,7 @@ int main(int argc, char **argv) {
     if(!cap.isOpened()) return -1;
         
     cap.set(CAP_PROP_POS_FRAMES, atoi(argv[3]));    
+	
 	for (framenum=atoi(argv[3]); framenum<atoi(argv[4]); framenum++){
 		//sprintf(filename, "%s/xi%06d.tif", argv[1], framenum);
 		//image_input = imread(filename, 1);
@@ -137,16 +139,13 @@ int main(int argc, char **argv) {
 		flip(image, image, 1);
 		image_height = image.rows;
 		image_width = image.cols;
-		cout << framenum << ";";
-		if (framenum==0) imwrite("gogox.png", image_input);
 		for (n=0; n<n_max; n++) {
-			//calculate_moment(n, centroid_x[n], centroid_y[n]); 
-		//	cout << ";";
+			calculate_moment(n, centroid_x[n], centroid_y[n]); 
+			cout << ";";
 			}
-		imshow("wa", image);
-		waitKey(1);
+		if (framenum==atoi(argv[3])) imwrite("tes.png", image_input);
+		//imshow("wa", image);
+		//waitKey(1);
 		cout << endl;
-			
-    	
 		}
 	}       

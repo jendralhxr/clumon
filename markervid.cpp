@@ -17,7 +17,7 @@
 #define DISTANCE 2 // px from marker edge
 #define STEP 2
 unsigned int offset;
-unsigned int image_height, image_width, n_max;
+unsigned int image_height, image_width, n_max, n;
 unsigned int *centroid_x, *centroid_y, framenum;
 char filename[256];
 
@@ -115,10 +115,9 @@ int main(int argc, char **argv) {
 	int a, b, c;
 
 	// parse approximate centroid location	
-	int n=0, n_max=0;
 	while (in.read_row(a, b, c)) {
 		n_max++;
-		cout << int(a) << ": " <<b << "," << c << "," << n_max <<   endl;
+//		cout << int(a) << ": " <<b << "," << c << "," << n_max <<   endl;
 		centroid_x= (unsigned int *) realloc(centroid_x, sizeof(unsigned int) *n_max);
 		centroid_y= (unsigned int *) realloc(centroid_y, sizeof(unsigned int) *n_max);
 		centroid_x[a]= b;
@@ -143,7 +142,7 @@ int main(int argc, char **argv) {
 			calculate_moment(n, centroid_x[n], centroid_y[n]); 
 			cout << ";";
 			}
-		if (framenum==atoi(argv[3])) imwrite("tes.png", image_input);
+		if (framenum==atoi(argv[3])) imwrite("tes.png", image);
 		//imshow("wa", image);
 		//waitKey(1);
 		cout << endl;

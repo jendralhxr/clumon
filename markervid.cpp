@@ -1,4 +1,5 @@
 // compile: g++ markervid.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
+// run:		./a.out video-file marker-csv start-frame stop-frame
 //#define _GLIBCXX_USE_CXX11_ABI 0
 //#define _GLIBCXX_USE_CXX17_ABI 0
 #include <iostream>
@@ -126,25 +127,26 @@ int main(int argc, char **argv) {
 	VideoCapture cap(argv[1]); 
     if(!cap.isOpened()) return -1;
         
-	for (framenum=0; framenum<atoi(argv[4]); framenum++){
+    cap.set(CAP_PROP_POS_FRAMES, atoi(argv[3]));    
+	for (framenum=atoi(argv[3]); framenum<atoi(argv[4]); framenum++){
 		//sprintf(filename, "%s/xi%06d.tif", argv[1], framenum);
 		//image_input = imread(filename, 1);
 	    cap >> image_input; // get a new frame from camera
-    	if ((framenum>atoi(argv[3])) && (framenum<atoi(argv[4]))){
-			cvtColor(image_input, image, COLOR_BGR2GRAY);
-			transpose(image, image);  // two lines, rotate 90 deg clockwise
-			flip(image, image, 1);
-			image_height = image.rows;
-			image_width = image.cols;
-			cout << framenum << ";";
-			for (n=0; n<n_max; n++) {
-				calculate_moment(n, centroid_x[n], centroid_y[n]); 
-				cout << ";";
-				}
-			imshow("wa", image);
-			waitKey(1);
-			cout << endl;
+		cvtColor(image_input, image, COLOR_BGR2GRAY);
+		transpose(image, image);  // two lines, rotate 90 deg clockwise
+		flip(image, image, 1);
+		image_height = image.rows;
+		image_width = image.cols;
+		cout << framenum << ";";
+		if (framenum==0) imwrite("gogox.png", image_input);
+		for (n=0; n<n_max; n++) {
+			//calculate_moment(n, centroid_x[n], centroid_y[n]); 
+		//	cout << ";";
 			}
+		imshow("wa", image);
+		waitKey(1);
+		cout << endl;
+			
     	
 		}
 	}       

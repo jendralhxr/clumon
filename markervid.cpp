@@ -100,11 +100,18 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	// centroid position
 	centroid_x_final= moment_x_temp/mass_temp;
 	centroid_y_final= moment_y_temp/mass_temp;
-	centroid_x[markernumber] = int (centroid_x_final);
-	centroid_y[markernumber] = int (centroid_y_final);
-	//if (isnan(centroid_x_final)) imwrite("gogo.png", image);
-	cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
 	
+	if (isnan(centroid_x_final) || isnan(centroid_y_final)){
+		cout << setprecision(8) << 0 << ',' << 0;
+		//imwrite("gogo.png", image);
+		}
+	else {
+		// dont update marker position if there was occlusion
+		centroid_x[markernumber] = int (centroid_x_final);
+		centroid_y[markernumber] = int (centroid_y_final);
+		cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
+		}
+		
 	return(mass_temp);
 }
 
@@ -126,6 +133,7 @@ int main(int argc, char **argv) {
 	
 	VideoCapture cap(argv[1]); 
     if(!cap.isOpened()) return -1;
+	else printf("panjang %f\n", cap.get(CAP_PROP_FRAME_COUNT));    
         
     cap.set(CAP_PROP_POS_FRAMES, atoi(argv[3]));    
 	
@@ -138,7 +146,8 @@ int main(int argc, char **argv) {
 		flip(image, image, 1);
 		image_height = image.rows;
 		image_width = image.cols;
-		for (n=0; n<n_max; n++) {
+		cout << framenum << ";";
+			for (n=0; n<n_max; n++) {
 			calculate_moment(n, centroid_x[n], centroid_y[n]); 
 			cout << ";";
 			}

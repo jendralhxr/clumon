@@ -109,7 +109,8 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 		// dont update marker position if there was occlusion
 		centroid_x[markernumber] = int (centroid_x_final);
 		centroid_y[markernumber] = int (centroid_y_final);
-		cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
+		printf("%.6lf,%.6lf", centroid_x_final, centroid_y_final);
+		//cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
 		}
 		
 	return(mass_temp);

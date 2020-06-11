@@ -386,22 +386,34 @@ restofimage:
 int cvblob(int sep){
 	float moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
 	float moment_x_temp, moment_y_temp, mass_temp;
-	// Set up the detector with default parameters.
-	//SimpleBlobDetector detector;
-	SimpleBlobDetector::Params params;
-	params.filterByColor = false;
-	params.filterByCircularity = false;
-	params.filterByConvexity = true;
-	params.filterByInertia = true;
-	params.maxThreshold = 220;
-	params.minThreshold = 100;
-	SimpleBlobDetector detector;
+	
+	SimpleBlobDetector::Params pDefaultBLOB;
+    // This is default parameters for SimpleBlobDetector
+    pDefaultBLOB.thresholdStep = 10;
+    pDefaultBLOB.minThreshold = 20;
+    pDefaultBLOB.maxThreshold = 220;
+    pDefaultBLOB.minRepeatability = 2;
+    pDefaultBLOB.minDistBetweenBlobs = 10;
+    pDefaultBLOB.filterByColor = false;
+    pDefaultBLOB.blobColor = 0;
+    pDefaultBLOB.filterByArea = false;
+    pDefaultBLOB.minArea = 25;
+    pDefaultBLOB.maxArea = 5000;
+    pDefaultBLOB.filterByCircularity = false;
+    pDefaultBLOB.minCircularity = 0.9f;
+    pDefaultBLOB.maxCircularity = (float)1e37;
+    pDefaultBLOB.filterByInertia = false;
+    pDefaultBLOB.minInertiaRatio = 0.1f;
+    pDefaultBLOB.maxInertiaRatio = (float)1e37;
+    pDefaultBLOB.filterByConvexity = false;
+    pDefaultBLOB.minConvexity = 0.95f;
+    pDefaultBLOB.maxConvexity = (float)1e37;
 	
 	// Detect blobs.
-	std::vector<KeyPoint> keypoints;
-	Mat invert; bitwise_not(image, invert); detector.detect(invert, keypoints);
-	detector.detect(image, keypoints);
-
+	vector<KeyPoint> keypoints;
+	Ptr<SimpleBlobDetector> sbd = SimpleBlobDetector::create(pDefaultBLOB);
+	sbd->detect(image, keypoints, Mat());
+    
 	int n=0; 
 	for (std::vector<KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end(); ++it){
 		//cout << it->pt.x  << ';' << it->pt.y << endl;
@@ -438,6 +450,7 @@ int cvblob(int sep){
 	cout << endl;
 	return(n);
 }
+
 
 // parse image sequence	
 int main(int argc, char **argv){

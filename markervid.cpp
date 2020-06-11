@@ -1,4 +1,5 @@
 // compile: g++ markervid.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
+// run:		./a.out video-file marker-csv start-frame stop-frame
 //#define _GLIBCXX_USE_CXX11_ABI 0
 //#define _GLIBCXX_USE_CXX17_ABI 0
 #include <iostream>
@@ -16,7 +17,7 @@
 #define DISTANCE 2 // px from marker edge
 #define STEP 2
 unsigned int offset;
-unsigned int image_height, image_width, n_max;
+unsigned int image_height, image_width, n_max, n;
 unsigned int *centroid_x, *centroid_y, framenum;
 char filename[256];
 
@@ -30,7 +31,7 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	double moment_x_temp, moment_y_temp, mass_temp;
 	double centroid_x_final, centroid_y_final;
 	int edge_band;
-	
+		
 	// find edges
 	// ytop
 	edge_band= DISTANCE;
@@ -99,10 +100,19 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	// centroid position
 	centroid_x_final= moment_x_temp/mass_temp;
 	centroid_y_final= moment_y_temp/mass_temp;
-	centroid_x[markernumber] = int (centroid_x_final);
-	centroid_y[markernumber] = int (centroid_y_final);
-	if (isnan(centroid_x_final)) imwrite("gogo.png", image);
-	cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
+	
+	if (isnan(centroid_x_final) || isnan(centroid_y_final)){
+		cout << setprecision(8) << 0 << ',' << 0;
+		//imwrite("gogo.png", image);
+		}
+	else {
+		// dont update marker position if there was occlusion
+		centroid_x[markernumber] = int (centroid_x_final);
+		centroid_y[markernumber] = int (centroid_y_final);
+		printf("%.6lf,%.6lf", centroid_x_final, centroid_y_final);
+		//cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
+		}
+		
 	return(mass_temp);
 }
 
@@ -113,10 +123,9 @@ int main(int argc, char **argv) {
 	int a, b, c;
 
 	// parse approximate centroid location	
-	int n=0, n_max;
 	while (in.read_row(a, b, c)) {
-		//cout << int(a) << ": " <<b << "," << c << endl;
 		n_max++;
+//		cout << int(a) << ": " <<b << "," << c << "," << n_max <<   endl;
 		centroid_x= (unsigned int *) realloc(centroid_x, sizeof(unsigned int) *n_max);
 		centroid_y= (unsigned int *) realloc(centroid_y, sizeof(unsigned int) *n_max);
 		centroid_x[a]= b;
@@ -125,26 +134,27 @@ int main(int argc, char **argv) {
 	
 	VideoCapture cap(argv[1]); 
     if(!cap.isOpened()) return -1;
+	else printf("panjang %f\n", cap.get(CAP_PROP_FRAME_COUNT));    
         
-	for (framenum=0; framenum<atoi(argv[4]); framenum++){
+    cap.set(CAP_PROP_POS_FRAMES, atoi(argv[3]));    
+	
+	for (framenum=atoi(argv[3]); framenum<atoi(argv[4]); framenum++){
 		//sprintf(filename, "%s/xi%06d.tif", argv[1], framenum);
 		//image_input = imread(filename, 1);
 	    cap >> image_input; // get a new frame from camera
-    	if ((framenum>atoi(argv[3])) && (framenum<atoi(argv[4]))){
-			cvtColor(image_input, image, COLOR_BGR2GRAY);
-			transpose(image, image);  // two lines, rotate 90 deg clockwise
-			flip(image, image, 1);
-			image_height = image.rows;
-			image_width = image.cols;
-			cout << framenum << ";";
+		cvtColor(image_input, image, COLOR_BGR2GRAY);
+		transpose(image, image);  // two lines, rotate 90 deg clockwise
+		flip(image, image, 1);
+		image_height = image.rows;
+		image_width = image.cols;
+		cout << framenum << ";";
 			for (n=0; n<n_max; n++) {
-				calculate_moment(n, centroid_x[n], centroid_y[n]); 
-				cout << ";";
-				}
-			imshow("wa", image);
-			waitKey(1);
-			cout << endl;
+			calculate_moment(n, centroid_x[n], centroid_y[n]); 
+			cout << ";";
 			}
-    	
+		if (framenum==atoi(argv[3])) imwrite("tes.png", image);
+		//imshow("wa", image);
+		//waitKey(1);
+		cout << endl;
 		}
 	}       

@@ -1,6 +1,4 @@
-// g++ markerref.cpp -o markerref `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
-// ./markerref IMAGE-DIRECTORY CSV-FILE FRAMENUM THRESHOLD 
-
+// compile: g++ markerref.cpp  `pkg-config --libs opencv` -pthread -lpthread -std=gnu++11
 //#define _GLIBCXX_USE_CXX11_ABI 0
 //#define _GLIBCXX_USE_CXX17_ABI 0
 #include <iostream>
@@ -14,21 +12,21 @@
 #include <stdlib.h>
 #include "csv.h"
 
-#define DISTANCE 2 // px from marker edge
-#define STEP 2
-unsigned char threshold_gray= 15;
+#define DISTANCE 10 // px from marker edge
+#define STEP 1
 unsigned int offset;
 unsigned int image_height, image_width, n_max;
 unsigned int *centroid_x, *centroid_y, framenum;
+unsigned char val_threshold;
 char filename[256];
 
 using namespace std;
 using namespace cv;
 
-Mat image, image_input, temp;
-
+Mat image(1080, 1440, CV_8UC1), image_input(1080, 1440, CV_8UC1);
+unsigned int edge_top, edge_bottom, edge_left, edge_right;
+	
 unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
-	unsigned int edge_top, edge_bottom, edge_left, edge_right;
 	double moment_x_temp, moment_y_temp, mass_temp;
 	double centroid_x_final, centroid_y_final;
 	int edge_band;
@@ -38,9 +36,10 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_top= y_mid; edge_top>0; edge_top--){
 		//cout << "top :" << edge_top << " " << x_mid  << " " << int (image.data[ edge_top*image_width + x_mid]) << " " <<edge_band<< endl;
-		if (image.data[ edge_top*image_width + x_mid] < threshold_gray) {
-			if (image.data[ edge_top*image_width + x_mid + STEP] > threshold_gray) x_mid+=STEP;
-			else if (image.data[ edge_top*image_width + x_mid - STEP] > threshold_gray) x_mid-=STEP;
+		
+		if (image.data[ edge_top*image_width + x_mid] < val_threshold) {
+			if (image.data[ edge_top*image_width + x_mid + STEP] > val_threshold) x_mid+=STEP;
+			else if (image.data[ edge_top*image_width + x_mid - STEP] > val_threshold) x_mid-=STEP;
 			else edge_band--;
 			}
 		else image.data[ edge_top*image_width + x_mid]= 255;
@@ -50,9 +49,9 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_bottom= y_mid; edge_bottom<image_height; edge_bottom++){
 		//cout << "bot :" << edge_bottom << " " << x_mid << " " << int (image.data[ edge_bottom*image_width + x_mid]) << " " <<edge_band<< endl;
-		if (image.data[ edge_bottom*image_width + x_mid ] < threshold_gray) {
-			if (image.data[ edge_bottom*image_width + x_mid + STEP] > threshold_gray) x_mid+=STEP;
-			else if (image.data[ edge_bottom*image_width + x_mid - STEP] > threshold_gray) x_mid-=STEP;
+		if (image.data[ edge_bottom*image_width + x_mid ] < val_threshold) {
+			if (image.data[ edge_bottom*image_width + x_mid + STEP] > val_threshold) x_mid+=STEP;
+			else if (image.data[ edge_bottom*image_width + x_mid - STEP] > val_threshold) x_mid-=STEP;
 			else edge_band--;
 			}
 		else image.data[ edge_bottom*image_width + x_mid ]= 255;
@@ -62,9 +61,9 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_left= x_mid; edge_left>0; edge_left--){
 		//cout << "left:" << y_mid << " " << edge_left << " " << int (image.data[ y_mid*image_width + edge_left]) << " " <<edge_band<< endl;
-		if (image.data[ y_mid*image_width + edge_left ] < threshold_gray) {
-			if (image.data[ (y_mid-STEP)*image_width + edge_left ] > threshold_gray) y_mid-=STEP;
-			else if (image.data[ (y_mid+STEP)*image_width + edge_left ] > threshold_gray) y_mid+=STEP;
+		if (image.data[ y_mid*image_width + edge_left ] < val_threshold) {
+			if (image.data[ (y_mid-STEP)*image_width + edge_left ] > val_threshold) y_mid-=STEP;
+			else if (image.data[ (y_mid+STEP)*image_width + edge_left ] > val_threshold) y_mid+=STEP;
 			else edge_band--;
 			}
 		else image.data[ y_mid*image_width + edge_left ]= 255;
@@ -74,9 +73,9 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	edge_band= DISTANCE;
 	for (edge_right= x_mid; edge_right<image_width; edge_right++){
 		//cout << "right:" << y_mid << " " << edge_right << " " << int (image.data[ y_mid*image_width + edge_right]) << " " <<edge_band<< endl;
-		if (image.data[ y_mid*image_width + edge_right ] < threshold_gray) {
-			if (image.data[ (y_mid-STEP)*image_width + edge_right ] > threshold_gray) y_mid-=STEP;
-			else if (image.data[ (y_mid+STEP)*image_width + edge_right ] > threshold_gray) y_mid+=STEP;
+		if (image.data[ y_mid*image_width + edge_right ] < val_threshold) {
+			if (image.data[ (y_mid-STEP)*image_width + edge_right ] > val_threshold) y_mid-=STEP;
+			else if (image.data[ (y_mid+STEP)*image_width + edge_right ] > val_threshold) y_mid+=STEP;
 			else edge_band--;
 			}
 		else image.data[ y_mid*image_width + edge_right ]= 255;
@@ -86,11 +85,12 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	//cout << markernumber << "-l:\t" << edge_left << "\t" << x_mid << "\t" << edge_right << endl; 
 	//cout << markernumber << "-v:\t" << edge_top << "\t" << y_mid  << "\t" << edge_bottom << endl; 
 	// calculate moment of designated marker
+	
 	unsigned int x, y;
 	mass_temp=0.0; moment_x_temp=0.0; moment_y_temp=0.0;
 	for (y= edge_top; y<edge_bottom; y++){
 		for (x= edge_left; x<edge_right; x++){
-			if (image.data[ y*image_width + x ] > threshold_gray){
+			if (image.data[ y*image_width + x ] > val_threshold){
 				mass_temp += 1.0;
 				moment_x_temp += double(x);
 				moment_y_temp += double(y);
@@ -103,7 +103,7 @@ unsigned int calculate_moment(int markernumber, int x_mid, int y_mid){
 	centroid_y_final= moment_y_temp/mass_temp;
 	centroid_x[markernumber] = int (centroid_x_final);
 	centroid_y[markernumber] = int (centroid_y_final);
-	cout << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
+	cout << markernumber << ',' << setprecision(8) << centroid_x_final << ',' << centroid_y_final;
 	return(mass_temp);
 }
 
@@ -112,12 +112,12 @@ int main(int argc, char **argv) {
 	io::CSVReader<3> in(argv[2]);
 	in.read_header(io::ignore_extra_column, "marker", "x", "y");
 	int a, b, c;
-	threshold_gray= atoi(argv[4]);
-
+	
+	val_threshold = atoi(argv[4]);
 	// parse approximate centroid location	
 	int n=0, n_max;
 	while (in.read_row(a, b, c)) {
-		//cout << int(a) << ": " <<b << "," << c << endl;
+//		cout << int(a) << ": " <<b << "," << c << endl;
 		n_max++;
 		centroid_x= (unsigned int *) realloc(centroid_x, sizeof(unsigned int) *n_max);
 		centroid_y= (unsigned int *) realloc(centroid_y, sizeof(unsigned int) *n_max);
@@ -126,23 +126,25 @@ int main(int argc, char **argv) {
 		}
 	
 	for (framenum=0; framenum<atoi(argv[3]); framenum++){
-		sprintf(filename, "%s/xi%06d.tif", argv[1], framenum);
-		printf("%s\n",filename);
+		sprintf(filename, "%s/%05d.png", argv[1], framenum);
+		//printf("%s\n",filename);
 		image_input = imread(filename, 1);
-		if (framenum==0) imwrite("gogo.png", image_input);
-		cvtColor(image_input, image, COLOR_BGR2GRAY);
-		transpose(image, image);  // two lines, rotate 90 deg clockwise
-		flip(image, image, 1);
 		image_height = image.rows;
 		image_width = image.cols;
-		cout << framenum << ";";
+		
+		cvtColor(image_input, image, COLOR_BGR2GRAY);
+		
+		cout << framenum << ";" ;
 		for (n=0; n<n_max; n++) {
+		/*	
+		imshow("egeg", image);
+		waitKey(0);*/
+			
 			calculate_moment(n, centroid_x[n], centroid_y[n]); 
 			cout << ";";
+			
 			}
 		cout << endl;
 		
-		//imshow("wa", image);
-		//waitKey(0);
 		}
 	}       

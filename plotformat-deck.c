@@ -12,7 +12,7 @@ char filename[128], filename2[128];
 
 int parse18dualside(){
 	float point[36];
-	int i,t;
+	int t;
 	for (t=0; t<framecount; t++){
 		fscanf(input,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",\
 		&point[0], &point[1], &point[2], &point[3],\
@@ -66,11 +66,12 @@ int parse18dualside(){
 		fprintf(output2,"\n");
 		fclose(output2);
 		}
+		return(t);
 }
 
 int parse16singleside(){
 	float point[32];
-	int i,t;
+	int t;
 	for (t=0; t<framecount; t++){
 		fscanf(input,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",\
 		&point[0], &point[1], &point[2], &point[3],\
@@ -120,11 +121,48 @@ int parse16singleside(){
 		fprintf(output,"\n");
 		fclose(output);
 		}
+		return(t);
+}
+
+int parse7singleside(char *path){
+	float point[8];
+	int t;
+	for (t=0; t<framecount; t++){
+		fscanf(input,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n",\
+		&point[0], &point[1], &point[2], &point[3],\
+		&point[4], &point[5], &point[6]);
+	
+		sprintf(filename, "%s/deck%06d.txt", path, t);
+		printf("%s\n", filename);
+		output= fopen(filename, "w");
+		fprintf(output,"%f %f %f\n", 	-2.4,  	0.0, 	0.0);
+		fprintf(output,"%f %f %f\n\n", 	-2.4,  	12.4,	0.0);
+		fprintf(output,"%f %f %f\n", 	0.0,   	0.0, 	(double) point[0]);
+		fprintf(output,"%f %f %f\n\n", 	0.0,   	12.4,	(double) point[0]);
+		fprintf(output,"%f %f %f\n", 	4.0,   	0.0, 	(double) point[1]);
+		fprintf(output,"%f %f %f\n\n", 	4.0,   	12.4,	(double) point[1]);
+		fprintf(output,"%f %f %f\n", 	7.8,   	0.0, 	(double) point[2]);
+		fprintf(output,"%f %f %f\n\n", 	7.8,   	12.4,	(double) point[2]);
+		fprintf(output,"%f %f %f\n", 	11.8,  	0.0, 	(double) point[3]);
+		fprintf(output,"%f %f %f\n\n", 	11.8,  	12.4,	(double) point[3]);
+		fprintf(output,"%f %f %f\n", 	15.7,  	0.0, 	(double) point[4]);
+		fprintf(output,"%f %f %f\n\n", 	15.7,  	12.4,	(double) point[4]);
+		fprintf(output,"%f %f %f\n", 	19.6,  	0.0, 	(double) point[5]);
+		fprintf(output,"%f %f %f\n\n", 	19.6,  	12.4,	(double) point[5]);
+		fprintf(output,"%f %f %f\n", 	23.4,  	0.0, 	(double) point[6]);
+		fprintf(output,"%f %f %f\n\n", 	23.4,  	12.4,	(double) point[6]);
+		fprintf(output,"%f %f %f\n", 	25.8,  	0.0, 	0.0);
+		fprintf(output,"%f %f %f\n\n", 	25.8,  	12.4,	0.0);
+		fprintf(output,"\n");
+		fclose(output);
+		}
+		return(t);
 }
 
 int main(int argc, char **argv){
 	input= fopen(argv[1], "r");
 	framecount= atoi(argv[2]);
-	parse18dualside();
+	//parse18dualside();
 	//parse16singleside();
+	parse7singleside(argv[3]);
 	}

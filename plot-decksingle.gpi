@@ -1,5 +1,7 @@
 #!/usr/bin/gnuplot --persist
 
+# run it liek: gnuplot -c plot-decksingle.gpi im1606/deck im1606/anim 0 700 18:06 30
+
 #reset
 infile_pref= ARG1
 outfile_pref= ARG2
@@ -12,12 +14,11 @@ temp=sprintf("start at %s:%s, frame[%s-%s]", time_p, time_s, FRAME_START, FRAME_
 print(temp);
 
 set terminal pngcairo
-#outfile = sprintf('tes.eps')
 #set terminal epslatex color colortext
 #set terminal postscript eps enhanced color font 'Arial,20' linewidth 2
 set zzeroaxis
 set xrange [-3:27]
-set yrange [-30:30]
+set yrange [-15:15]
 set zrange [-7:6]
 set xlabel "span [m]"
 set ylabel "width [m]"
@@ -25,15 +26,18 @@ set zlabel "displacement [mm]" rotate
 set grid
 #set view 0,0
 set style line 2  lc rgb '#0025ad' # blue
+time_s= time_s + 0.00000001
 
 do for [framenum=FRAME_START:FRAME_STOP]{
-	print(framenum)
-	time_s= time_s + 1/60
-	set title sprintf("t= %s:%f",time_p, time_s)
+	plottitle= sprintf("t= %s:%.3f",time_p, time_s) 
+	set title plottitle
+	set title offset 0,-4
+	temp= sprintf("[%06d] %s %.3f", framenum, plottitle, time_s)
+	print(temp);
 	outfile = sprintf("%s%06d.png", outfile_pref, framenum);
 	#outfile = sprintf("%s%06d.eps", outfile_pref, framenum);
 	set output outfile
 	displacement = sprintf("%s%06d.txt", infile_pref, framenum);
 	splot displacement with lines ls 2 notitle
-	#splot displacement with lines ls 2 title sprintf("t=%.1f ms    left side",(i-850)*10/2.4) , right with lines ls 1 title sprintf("right side")
+	time_s= time_s + 0.0167
 }

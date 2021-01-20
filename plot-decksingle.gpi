@@ -1,0 +1,39 @@
+#!/usr/bin/gnuplot --persist
+
+#reset
+infile_pref= ARG1
+outfile_pref= ARG2
+FRAME_START= ARG3
+FRAME_STOP= ARG4
+time_p=ARG5
+time_s=ARG6
+
+temp=sprintf("start at %s:%s, frame[%s-%s]", time_p, time_s, FRAME_START, FRAME_STOP)
+print(temp);
+
+set terminal pngcairo
+#outfile = sprintf('tes.eps')
+#set terminal epslatex color colortext
+#set terminal postscript eps enhanced color font 'Arial,20' linewidth 2
+set zzeroaxis
+set xrange [-3:27]
+set yrange [-30:30]
+set zrange [-7:6]
+set xlabel "span [m]"
+set ylabel "width [m]"
+set zlabel "displacement [mm]" rotate
+set grid
+#set view 0,0
+set style line 2  lc rgb '#0025ad' # blue
+
+do for [framenum=FRAME_START:FRAME_STOP]{
+	print(framenum)
+	time_s= time_s + 1/60
+	set title sprintf("t= %s:%f",time_p, time_s)
+	outfile = sprintf("%s%06d.png", outfile_pref, framenum);
+	#outfile = sprintf("%s%06d.eps", outfile_pref, framenum);
+	set output outfile
+	displacement = sprintf("%s%06d.txt", infile_pref, framenum);
+	splot displacement with lines ls 2 notitle
+	#splot displacement with lines ls 2 title sprintf("t=%.1f ms    left side",(i-850)*10/2.4) , right with lines ls 1 title sprintf("right side")
+}
